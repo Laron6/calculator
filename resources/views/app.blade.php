@@ -58,18 +58,36 @@
                         </div>
                         <div class="form-group">
                             <label>Возраст</label>
-                            <input type="number" name="age" value="30" required>
+                            <div class="number-input-wrapper">
+                                <input type="number" name="age" placeholder="лет" class="number-input" required id="ageInput" min="18" max="100" value="18">
+                                <div class="number-controls">
+                                    <button type="button" class="number-btn" onclick="changeValue('ageInput', -1, 18, 100)">−</button>
+                                    <button type="button" class="number-btn" onclick="changeValue('ageInput', 1, 18, 100)">+</button>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Стаж</label>
-                            <input type="number" name="experience" value="5" required>
+                            <div class="number-input-wrapper">
+                                <input type="number" name="experience" placeholder="лет" class="number-input" required id="expInput" min="0" max="80" value="0">
+                                <div class="number-controls">
+                                    <button type="button" class="number-btn" onclick="changeValue('expInput', -1, 0, 80)">−</button>
+                                    <button type="button" class="number-btn" onclick="changeValue('expInput', 1, 0, 80)">+</button>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Пол</label>
-                            <select name="gender">
-                                <option value="0">Мужской</option>
-                                <option value="1">Женский</option>
-                            </select>
+                            <div style="display: flex; gap: 12px; margin-top: 8px;">
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px 20px; background: rgba(255,255,255,0.05); border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;">
+                                    <input type="radio" name="gender" value="0" style="width: 18px; height: 18px; margin: 0;" checked>
+                                    <span><i class="fas fa-mars"></i> Мужской</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px 20px; background: rgba(255,255,255,0.05); border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;">
+                                    <input type="radio" name="gender" value="1" style="width: 18px; height: 18px; margin: 0;">
+                                    <span><i class="fas fa-venus"></i> Женский</span>
+                                </label>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary w-full">
                             <i class="fas fa-plus"></i> Добавить рабочего
@@ -84,11 +102,11 @@
                     <form action="/workers/import" method="POST" enctype="multipart/form-data" id="importForm">
                         @csrf
                         <div style="margin-bottom: 16px;">
-                            <label for="fileInput" class="file-upload-label" style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 40px; color: white; cursor: pointer; font-weight: 600; font-size: 14px;">
+                            <label for="fileInput" class="file-upload-label">
                                 <i class="fas fa-folder-open"></i> Выберите файл (.lst)
                             </label>
                             <input type="file" id="fileInput" name="file" accept=".lst,.txt" style="display: none;">
-                            <span id="fileName" style="color: rgba(255,255,255,0.5); margin-left: 12px;">Файл не выбран</span>
+                            <span id="fileName" class="file-name">Файл не выбран</span>
                         </div>
                         <button type="submit" class="btn btn-primary w-full" id="submitBtn" disabled style="opacity: 0.5;">
                             <i class="fas fa-upload"></i> Загрузить список
@@ -115,17 +133,17 @@
                 </div>
 
                 <div class="card">
-                    <div class="flex-between">
+                    <div class="flex-between" style="flex-direction: column; align-items: stretch; gap: 16px;">
                         <h3><i class="fas fa-layer-group"></i> Рабочие группы</h3>
-                        <form action="/group/create" method="POST" class="inline-form">
+                        <form action="/group/create" method="POST" style="display: flex; gap: 12px; width: 100%;">
                             @csrf
-                            <input type="text" name="name" placeholder="Название" class="inline-input">
-                            <button type="submit" class="btn btn-primary btn-sm">
+                            <input type="text" name="name" placeholder="Название группы" style="flex: 1; margin: 0;">
+                            <button type="submit" class="btn btn-primary" style="padding: 12px 24px; white-space: nowrap;">
                                 <i class="fas fa-plus"></i> Создать
                             </button>
                         </form>
                     </div>
-                    <div class="groups-list">
+                    <div class="groups-list" style="margin-top: 20px;">
                         @foreach($groups as $group)
                         <div class="group-card {{ $selectedGroupId == $group->id ? 'selected' : '' }}">
                             <a href="?tab=workers&group_id={{ $group->id }}" class="group-link">
@@ -152,7 +170,7 @@
                             @foreach($workers as $worker)
                                 @if(!$selectedGroup->workers->contains($worker))
                                 <div class="worker-item">
-                                    <span class="worker-name">{{ $worker->last_name }} {{ $worker->first_name }}</span>
+                                    <span class="worker-name" style="color: white;">{{ $worker->last_name }} {{ $worker->first_name }}</span>
                                     <form action="/group/{{ $selectedGroup->id }}/add-worker" method="POST" class="inline-form">
                                         @csrf
                                         <input type="hidden" name="worker_id" value="{{ $worker->id }}">
@@ -168,7 +186,7 @@
                         <div class="worker-list compact">
                             @foreach($selectedGroup->workers as $worker)
                             <div class="worker-item">
-                                <span class="worker-name">{{ $worker->last_name }} {{ $worker->first_name }}</span>
+                                <span class="worker-name" style="color: white;">{{ $worker->last_name }} {{ $worker->first_name }}</span>
                                 <form action="/group/{{ $selectedGroup->id }}/remove-worker" method="POST" class="inline-form">
                                     @csrf
                                     <input type="hidden" name="worker_id" value="{{ $worker->id }}">
@@ -219,18 +237,16 @@
                                 <tr>
                                     <th>Ф.И.О отсутствующего рабочего</th>
                                     <th>Производительность</th>
-                                </tr>
                             </thead>
                             <tbody>
                                 @foreach($selectedGroup->workers as $worker)
                                 <tr>
-                                    <td>{{ $worker->last_name }} {{ $worker->first_name }} {{ $worker->patronymic }}</td>
+                                    <td>{{ $worker->last_name }} {{ $worker->first_name }} {{ $worker->patronymic }}\\
                                     <td>
                                         <input type="number" step="0.1" name="productivities[{{ $worker->id }}]" 
                                                value="{{ $productivityValues[$worker->id] ?? '' }}" 
                                                placeholder="0" class="input-small">
                                     </td>
-                                </tr>
                                 @endforeach
                             </tbody>
                         </table>
@@ -249,14 +265,13 @@
                     <div class="table-wrapper">
                         <table class="table">
                             <thead>
-                                <tr><th>Рабочий</th><th>Индивидуальная производительность</th></tr>
+                                <tr><th>Рабочий</th><th>Индивидуальная производительность</th>
                             </thead>
                             <tbody>
                                 @foreach($calculatedResults as $res)
                                 <tr>
                                     <td>{{ $res['worker']->last_name }} {{ $res['worker']->first_name }}</td>
                                     <td class="highlight">{{ $res['productivity'] }}</td>
-                                </tr>
                                 @endforeach
                             </tbody>
                         </table>
@@ -280,14 +295,13 @@
                     <div class="table-wrapper">
                         <table class="table">
                             <thead>
-                                <tr><th>Рабочий</th><th>Индивидуальная производительность</th></tr>
+                                <tr><th>Рабочий</th><th>Индивидуальная производительность</th>
                             </thead>
                             <tbody>
                                 @foreach($selectedGroup->workers as $i => $worker)
                                 <tr>
                                     <td>{{ $worker->last_name }} {{ $worker->first_name }}</td>
                                     <td class="highlight">{{ round($alternativeResults[$i] ?? 0, 2) }}</td>
-                                </tr>
                                 @endforeach
                             </tbody>
                         </table>
@@ -317,6 +331,23 @@
 </div>
 
 <script>
+    function changeValue(inputId, delta, minVal, maxVal) {
+        let input = document.getElementById(inputId);
+        let currentValue = parseInt(input.value);
+        
+        if (isNaN(currentValue) || currentValue === '') {
+            currentValue = minVal;
+            input.value = minVal;
+        }
+        
+        let newValue = currentValue + delta;
+        
+        if (newValue >= minVal && newValue <= maxVal) {
+            input.value = newValue;
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    }
+    
     document.getElementById('fileInput').addEventListener('change', function(e) {
         var fileName = e.target.files[0]?.name || 'Файл не выбран';
         document.getElementById('fileName').innerText = fileName;

@@ -10,12 +10,12 @@
 <body>
 <div class="container" style="max-width: 600px; margin: 50px auto;">
     <div class="glass-card" style="padding: 30px;">
-        <h3 style="margin-bottom: 24px;"><i class="fas fa-edit"></i> Редактирование группы</h3>
+        <h3 style="margin-bottom: 24px; color: white;"><i class="fas fa-edit"></i> Редактирование группы</h3>
         <form action="/group/update/{{ $group->id }}" method="POST">
             @csrf
             <div class="form-group">
                 <label>Название группы</label>
-                <input type="text" name="name" value="{{ $group->name }}" required>
+                <input type="text" name="name" value="{{ $group->name }}" required style="color: white; background: rgba(255,255,255,0.08);">
             </div>
             <div class="flex-between mt-4">
                 <a href="/" class="btn btn-outline"><i class="fas fa-times"></i> Отмена</a>

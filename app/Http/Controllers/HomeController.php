@@ -7,6 +7,7 @@ use App\Models\WorkGroup;
 use App\Models\GroupProductivity;
 use App\Services\ProductivityCalculator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
@@ -37,8 +38,15 @@ class HomeController extends Controller
                 
                 if ($showResults) {
                     $calculator = new ProductivityCalculator($selectedGroup);
+                    $bVec = $calculator->getBVec();
                     $decisions = $calculator->calculate();
                     $calculatedMetrics = $calculator->calculateMetrics();
+                    
+                    Log::info('=== КАЛЬКУЛЯТОР ===');
+                    Log::info('Группа: ' . $selectedGroup->name);
+                    Log::info('Кол-во рабочих: ' . count($selectedGroup->workers));
+                    Log::info('BVec: ' . json_encode($bVec));
+                    Log::info('Decisions: ' . json_encode($decisions));
                     
                     $workerArray = $selectedGroup->workers->values();
                     foreach ($workerArray as $i => $worker) {

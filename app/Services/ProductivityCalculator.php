@@ -31,38 +31,88 @@ class ProductivityCalculator
     public function calculate()
     {
         $n = count($this->group->workers);
-        if ($n === 0) return [];
+        if ($n < 2) {
+            return array_fill(0, $n, 0);
+        }
+        
+        $hasData = false;
+        foreach ($this->bVec as $val) {
+            if ($val > 0) {
+                $hasData = true;
+                break;
+            }
+        }
+        
+        if (!$hasData) {
+            return array_fill(0, $n, 0);
+        }
         
         $matrix = $this->createMatrix($n);
         
-        for ($k = 0; $k < $n; $k++) {
-            for ($i = $n - 1; $i >= $k; $i--) {
-                if ($i == $k) {
-                    $pivot = $matrix[$k][$k];
-                    if ($pivot != 0) {
-                        for ($j = $n; $j >= $k; $j--) {
-                            $matrix[$i][$j] /= $pivot;
-                        }
+        $det = $this->getDeterminant($matrix, $n);
+        if (abs($det) < 0.0001) {
+            return array_fill(0, $n, 0);
+        }
+        
+        $matrix = $this->gaussianElimination($matrix, $n);
+        $this->decisions = $this->backSubstitution($matrix, $n);
+        
+        foreach ($this->decisions as $i => $val) {
+            if ($val < 0) {
+                $this->decisions[$i] = 0;
+            }
+        }
+        
+        return $this->decisions;
+    }
+    
+    private function getDeterminant($matrix, $n)
+    {
+        $temp = [];
+        for ($i = 0; $i < $n; $i++) {
+            $temp[$i] = [];
+            for ($j = 0; $j < $n; $j++) {
+                $temp[$i][$j] = $matrix[$i][$j];
+            }
+        }
+        
+        $det = 1;
+        
+        for ($i = 0; $i < $n; $i++) {
+            $pivot = $temp[$i][$i];
+            if (abs($pivot) < 0.0001) {
+                $swap = -1;
+                for ($j = $i + 1; $j < $n; $j++) {
+                    if (abs($temp[$j][$i]) > 0.0001) {
+                        $swap = $j;
+                        break;
                     }
-                } else {
-                    $factor = $matrix[$i][$k] / $matrix[$k][$k];
-                    for ($j = $n; $j >= $k; $j--) {
-                        $matrix[$i][$j] -= $factor * $matrix[$k][$j];
-                    }
+                }
+                if ($swap == -1) return 0;
+                $temp = $this->swapRows($temp, $i, $swap);
+                $det = -$det;
+                $pivot = $temp[$i][$i];
+            }
+            
+            $det *= $pivot;
+            
+            for ($j = $i + 1; $j < $n; $j++) {
+                $factor = $temp[$j][$i] / $pivot;
+                for ($k = $i; $k < $n; $k++) {
+                    $temp[$j][$k] -= $factor * $temp[$i][$k];
                 }
             }
         }
         
-        $this->decisions = array_fill(0, $n, 0);
-        for ($i = $n - 1; $i >= 0; $i--) {
-            $this->decisions[$i] = $matrix[$i][$n];
-            for ($j = $i + 1; $j < $n; $j++) {
-                $this->decisions[$i] -= $matrix[$i][$j] * $this->decisions[$j];
-            }
-            $this->decisions[$i] = round($this->decisions[$i], 2);
-        }
-        
-        return $this->decisions;
+        return $det;
+    }
+    
+    private function swapRows($matrix, $row1, $row2)
+    {
+        $temp = $matrix[$row1];
+        $matrix[$row1] = $matrix[$row2];
+        $matrix[$row2] = $temp;
+        return $matrix;
     }
     
     private function createMatrix($n)
@@ -88,6 +138,49 @@ class ProductivityCalculator
         }
         
         return $matrix;
+    }
+    
+    private function gaussianElimination($matrix, $n)
+    {
+        for ($k = 0; $k < $n; $k++) {
+            $pivot = $matrix[$k][$k];
+            if (abs($pivot) < 0.0001) {
+                continue;
+            }
+            
+            for ($i = $n - 1; $i >= $k; $i--) {
+                if ($i == $k) {
+                    for ($j = $n; $j >= $k; $j--) {
+                        $matrix[$i][$j] /= $pivot;
+                    }
+                } else {
+                    $factor = $matrix[$i][$k] / $pivot;
+                    for ($j = $n; $j >= $k; $j--) {
+                        $matrix[$i][$j] -= $factor * $matrix[$k][$j];
+                    }
+                }
+            }
+        }
+        return $matrix;
+    }
+    
+    private function backSubstitution($matrix, $n)
+    {
+        $decisions = array_fill(0, $n, 0);
+        
+        for ($i = $n - 1; $i >= 0; $i--) {
+            $decisions[$i] = $matrix[$i][$n];
+            for ($j = $i + 1; $j < $n; $j++) {
+                $decisions[$i] -= $matrix[$i][$j] * $decisions[$j];
+            }
+            if (is_nan($decisions[$i]) || is_infinite($decisions[$i]) || $decisions[$i] < 0) {
+                $decisions[$i] = 0;
+            } else {
+                $decisions[$i] = round($decisions[$i], 2);
+            }
+        }
+        
+        return $decisions;
     }
     
     public function calculateMetrics()
@@ -122,23 +215,18 @@ class ProductivityCalculator
         $n = count($this->group->workers);
         if ($n < 3) return ['decisions' => [], 'L' => 0, 'R' => 0];
         
-        $workers = $this->group->workers->values();
-        
-        $del = 0;
-        for ($j = 0; $j < $n; $j++) {
-            $del += 1;
-        }
-        
         $decisions = array_fill(0, $n, 0);
         $thirdIdx = min(2, $n - 1);
         
-        if ($del != 0 && isset($this->bVec[$thirdIdx])) {
+        $del = $n;
+        
+        if ($del != 0 && isset($this->bVec[$thirdIdx]) && $this->bVec[$thirdIdx] > 0) {
             for ($i = 0; $i < $n; $i++) {
                 $decisions[$i] = $this->bVec[$thirdIdx] / $del;
             }
         }
         
-        if ($n > 4 && isset($this->bVec[0])) {
+        if ($n > 4 && isset($this->bVec[0]) && $this->bVec[0] > 0) {
             $temp = $this->bVec[0];
             for ($i = 0; $i < $n; $i++) {
                 if ($i != 4 && isset($decisions[$i])) {
@@ -148,7 +236,7 @@ class ProductivityCalculator
             $decisions[4] = $temp;
         }
         
-        if ($n > 5 && isset($this->bVec[1])) {
+        if ($n > 5 && isset($this->bVec[1]) && $this->bVec[1] > 0) {
             $temp = $this->bVec[1];
             for ($i = 0; $i < $n; $i++) {
                 if ($i != 5 && isset($decisions[$i])) {

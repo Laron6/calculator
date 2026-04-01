@@ -8,6 +8,10 @@ class GroupProductivity extends Model
 {
     protected $fillable = ['work_group_id', 'worker_id', 'value'];
     
+    protected $casts = [
+        'value' => 'float'
+    ];
+    
     public function group()
     {
         return $this->belongsTo(WorkGroup::class);
