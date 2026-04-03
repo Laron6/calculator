@@ -1,0 +1,54 @@
+/* Сетки */
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+/* Карточки */
+.card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card h3 i {
+    color: #667eea;
+    font-size: 20px;
+}
+
+/* Стили для заголовков в управлении группой */
+.card .grid-2 h4 {
+    color: white;
+    font-size: 16px;
+    margin-bottom: 16px;
+}
+
+.card .grid-2 h4 i {
+    color: #667eea;
+    margin-right: 8px;
+}

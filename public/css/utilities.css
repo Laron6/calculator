@@ -1,0 +1,79 @@
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.mt-4 {
+    margin-top: 28px;
+}
+
+.mb-4 {
+    margin-bottom: 24px;
+}
+
+.w-full {
+    width: 100%;
+}
+
+hr {
+    margin: 28px 0;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+.inline-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.inline-input {
+    width: 160px;
+    margin: 0;
+    padding: 12px 14px;
+}
+
+.select-styled {
+    padding: 12px 24px;
+    border-radius: 40px;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.select-styled:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Футер */
+.footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 32px 40px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.footer-content p {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+}
+
+.footer-small {
+    font-size: 12px;
+    margin-top: 8px;
+    color: rgba(255, 255, 255, 0.3);
+}

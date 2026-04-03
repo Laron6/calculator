@@ -1,0 +1,95 @@
+/* Список рабочих */
+.worker-list {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.worker-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.2s;
+}
+
+.worker-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+    padding-left: 8px;
+    border-radius: 12px;
+}
+
+.worker-name {
+    font-weight: 500;
+    color: white;
+}
+
+.worker-actions {
+    display: flex;
+    gap: 4px;
+}
+
+/* Список групп */
+.groups-list {
+    margin-top: 16px;
+}
+
+.group-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.group-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(5px);
+}
+
+.group-card.selected {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.group-link {
+    flex: 1;
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.group-count {
+    font-size: 11px;
+    opacity: 0.6;
+    margin-left: 6px;
+}
+
+.group-actions {
+    display: flex;
+    gap: 4px;
+}
+
+/* Стили для списков управления группой */
+.worker-list.compact .worker-name {
+    color: white !important;
+}
+
+.worker-list.compact .worker-item {
+    color: white;
+}
+
+.worker-list.compact .btn-link {
+    color: #a8b2ff;
+}
+
+.worker-list.compact .btn-link:hover {
+    color: white;
+}

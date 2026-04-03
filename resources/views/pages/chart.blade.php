@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Графики производительности</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,6 +16,18 @@
             <h1><i class="fas fa-chart-line"></i> Графики производительности</h1>
             <p>Визуализация индивидуальной производительности рабочих</p>
         </div>
+
+        @if(session('success'))
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+            </div>
+        @endif
 
         <div class="tabs-wrapper">
             <div class="tabs">
