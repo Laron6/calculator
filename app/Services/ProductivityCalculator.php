@@ -31,9 +31,7 @@ class ProductivityCalculator
     public function calculate()
     {
         $n = count($this->group->workers);
-        if ($n < 2) {
-            return array_fill(0, $n, 0);
-        }
+        if ($n === 0) return [];
         
         $hasData = false;
         foreach ($this->bVec as $val) {
@@ -61,6 +59,7 @@ class ProductivityCalculator
             if ($val < 0) {
                 $this->decisions[$i] = 0;
             }
+            $this->decisions[$i] = round($this->decisions[$i], 2);
         }
         
         return $this->decisions;
@@ -173,11 +172,6 @@ class ProductivityCalculator
             for ($j = $i + 1; $j < $n; $j++) {
                 $decisions[$i] -= $matrix[$i][$j] * $decisions[$j];
             }
-            if (is_nan($decisions[$i]) || is_infinite($decisions[$i]) || $decisions[$i] < 0) {
-                $decisions[$i] = 0;
-            } else {
-                $decisions[$i] = round($decisions[$i], 2);
-            }
         }
         
         return $decisions;
@@ -244,6 +238,13 @@ class ProductivityCalculator
                 }
             }
             $decisions[5] = $temp;
+        }
+        
+        foreach ($decisions as $i => $val) {
+            if ($val < 0) {
+                $decisions[$i] = 0;
+            }
+            $decisions[$i] = round($decisions[$i], 2);
         }
         
         $last4 = array_slice($decisions, -4);
