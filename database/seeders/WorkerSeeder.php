@@ -8,26 +8,32 @@ use Illuminate\Database\Seeder;
 
 class WorkerSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        $workers = [];
-        for ($i = 1; $i <= 20; $i++) {
-            $workers[] = [
-                'last_name' => "Фамилия{$i}",
-                'first_name' => "Имя{$i}",
-                'patronymic' => "Отчество{$i}",
-                'age' => rand(18, 60),
-                'experience' => rand(0, 40),
-                'gender' => rand(0, 1),
-                'created_at' => now(),
-                'updated_at' => now()
-            ];
+        // Создаём 20 рабочих через фабрику
+        $workers = Worker::factory()->count(20)->create();
+        
+        // Создаём основную группу
+        $group = WorkGroup::create(['name' => 'Основная группа']);
+        
+        // Добавляем 9 рабочих в группу
+        $group->workers()->attach($workers->take(9)->pluck('id'));
+        
+        // Создаём дополнительные группы для примера
+        $this->createAdditionalGroups($workers);
+    }
+    
+    private function createAdditionalGroups($workers): void
+    {
+        $groups = [
+            ['name' => 'Проектная бригада', 'count' => 5],
+            ['name' => 'Вечерняя смена', 'count' => 4],
+            ['name' => 'Резервная группа', 'count' => 2],
+        ];
+        
+        foreach ($groups as $groupData) {
+            $group = WorkGroup::create(['name' => $groupData['name']]);
+            $group->workers()->attach($workers->random($groupData['count'])->pluck('id'));
         }
-        
-        Worker::insert($workers);
-        
-        $group = WorkGroup::create(['name' => 'Тестовая группа']);
-        $workers = Worker::take(5)->get();
-        $group->workers()->attach($workers->pluck('id'));
     }
 }

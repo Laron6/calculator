@@ -28,7 +28,7 @@
             </form>
         </div>
         <div class="groups-list" style="margin-top: 20px;">
-            @foreach($groups as $group)
+            @forelse($groups as $group)
             <div class="group-card {{ $selectedGroupId == $group->id ? 'selected' : '' }}">
                 <a href="?tab=workers&group_id={{ $group->id }}" class="group-link">
                     <i class="fas fa-folder"></i> {{ $group->name }}
@@ -39,7 +39,11 @@
                     <a href="/group/delete/{{ $group->id }}" class="btn-link" onclick="return confirm('Удалить группу?')" title="Удалить"><i class="fas fa-trash"></i></a>
                 </div>
             </div>
-            @endforeach
+            @empty
+            <div class="alert alert-info" style="text-align: center; margin: 20px 0;">
+                <i class="fas fa-info-circle"></i> Группы не созданы. Создайте первую группу
+            </div>
+            @endforelse
         </div>
     </div>
 </div>

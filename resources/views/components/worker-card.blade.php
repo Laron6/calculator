@@ -2,6 +2,17 @@
     <h3><i class="fas fa-user-plus"></i> Добавить рабочего</h3>
     <form action="/worker/add" method="POST">
         @csrf
+        
+        @if ($errors->any())
+            <div class="alert alert-danger" style="margin-bottom: 20px;">
+                <ul style="margin: 0; padding-left: 20px;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        
         <div class="form-group">
             <label>Фамилия</label>
             <input type="text" name="last_name" placeholder="Иванов" required>

@@ -3,18 +3,20 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Traits\WorkerAttributes;
+use App\Models\Traits\WorkerScopes;
+use App\Models\Traits\WorkerRelations;
 
 class Worker extends Model
 {
+    use HasFactory, WorkerAttributes, WorkerScopes, WorkerRelations;
+    
     protected $fillable = ['last_name', 'first_name', 'patronymic', 'age', 'experience', 'gender'];
     
-    public function getFullNameAttribute()
-    {
-        return trim("{$this->last_name} {$this->first_name} {$this->patronymic}");
-    }
-    
-    public function groups()
-    {
-        return $this->belongsToMany(WorkGroup::class, 'group_worker');
-    }
+    protected $casts = [
+        'age' => 'integer',
+        'experience' => 'integer',
+        'gender' => 'integer'
+    ];
 }

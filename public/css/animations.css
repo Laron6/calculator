@@ -1,0 +1,76 @@
+/* Плавное появление страницы */
+body {
+    animation: gentleFade 0.5s ease-out;
+}
+
+@keyframes gentleFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Карточки */
+.card {
+    animation: cardGlow 0.4s ease-out;
+}
+
+@keyframes cardGlow {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Таблицы */
+.table-wrapper {
+    animation: softReveal 0.3s ease-out;
+}
+
+@keyframes softReveal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Кнопки */
+.calc-buttons {
+    animation: buttonFade 0.3s ease-out;
+}
+
+@keyframes buttonFade {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Результаты */
+.mt-4,
+.alternative-results {
+    animation: resultFade 0.4s ease-out;
+}
+
+@keyframes resultFade {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Графики */
+canvas {
+    animation: chartFade 0.5s ease-out;
+}
+
+@keyframes chartFade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Селектор групп */
+.group-selector {
+    animation: selectorFade 0.3s ease-out;
+}
+
+@keyframes selectorFade {
+    from { opacity: 0; transform: translateY(-3px); }
+    to { opacity: 1; transform: translateY(0); }
+}

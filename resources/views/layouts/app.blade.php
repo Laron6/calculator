@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Объективная оценка производительности</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -29,34 +30,9 @@
     </div>
 </div>
 
-<script>
-    function changeValue(inputId, delta, minVal, maxVal) {
-        let input = document.getElementById(inputId);
-        let currentValue = parseInt(input.value);
-        
-        if (isNaN(currentValue) || currentValue === '') {
-            currentValue = minVal;
-            input.value = minVal;
-        }
-        
-        let newValue = currentValue + delta;
-        
-        if (newValue >= minVal && newValue <= maxVal) {
-            input.value = newValue;
-            input.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-    }
-    
-    document.getElementById('fileInput')?.addEventListener('change', function(e) {
-        var fileName = e.target.files[0]?.name || 'Файл не выбран';
-        document.getElementById('fileName').innerText = fileName;
-        document.getElementById('submitBtn').disabled = !e.target.files[0];
-        document.getElementById('submitBtn').style.opacity = e.target.files[0] ? '1' : '0.5';
-    });
-    
-    document.querySelector('.file-upload-label')?.addEventListener('click', function() {
-        document.getElementById('fileInput').click();
-    });
-</script>
+@include('components.theme-toggle')
+
+<script src="{{ asset('js/app.js') }}"></script>
+<script src="{{ asset('js/theme.js') }}"></script>
 </body>
 </html>

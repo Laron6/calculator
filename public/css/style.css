@@ -7,5 +7,7 @@
 @import url('tables.css');
 @import url('components.css');
 @import url('number-input.css');
-@import url('responsive.css');
+@import url('animations.css');
+@import url('themes.css');
 @import url('utilities.css');
+@import url('responsive.css');
