@@ -15,7 +15,6 @@ class ProductivitySolver
     
     private GaussSolver $gauss;
     private MatrixDeterminant $determinant;
-    private CramerSolver $cramer;
     private MetricsCalculator $metrics;
     private AlternativeProductivity $alternative;
     
@@ -29,7 +28,6 @@ class ProductivitySolver
         
         $this->gauss = new GaussSolver();
         $this->determinant = new MatrixDeterminant();
-        $this->cramer = new CramerSolver();
         $this->metrics = new MetricsCalculator();
         $this->alternative = new AlternativeProductivity();
     }
@@ -117,7 +115,8 @@ class ProductivitySolver
         }
         
         $bVecSlice = array_slice($this->bVec, 0, $n);
-        $decisions = $this->cramer->solve($matrix, $bVecSlice);
+        $cramer = new CramerSolver();
+        $decisions = $cramer->solve($matrix, $bVecSlice);
         
         foreach ($decisions as $i => $val) {
             if ($val < 0) $decisions[$i] = 0;
