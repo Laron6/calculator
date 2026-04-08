@@ -7,8 +7,23 @@ class GaussSolver
     public function solve(array $matrix, int $n): array
     {
         for ($k = 0; $k < $n; $k++) {
+            // Поиск строки с ненулевым элементом в столбце k
+            $maxRow = $k;
+            for ($i = $k + 1; $i < $n; $i++) {
+                if (abs($matrix[$i][$k]) > abs($matrix[$maxRow][$k])) {
+                    $maxRow = $i;
+                }
+            }
+            
+            // Если нашли ненулевой элемент, меняем строки местами
+            if (abs($matrix[$maxRow][$k]) > 0.0001 && $maxRow != $k) {
+                $matrix = $this->swapRows($matrix, $k, $maxRow);
+            }
+            
             $pivot = $matrix[$k][$k];
-            if (abs($pivot) < 0.0001) continue;
+            if (abs($pivot) < 0.0001) {
+                continue;
+            }
             
             for ($i = $n - 1; $i >= $k; $i--) {
                 if ($i == $k) {
@@ -37,5 +52,13 @@ class GaussSolver
             }
         }
         return $decisions;
+    }
+    
+    private function swapRows(array $matrix, int $row1, int $row2): array
+    {
+        $temp = $matrix[$row1];
+        $matrix[$row1] = $matrix[$row2];
+        $matrix[$row2] = $temp;
+        return $matrix;
     }
 }
