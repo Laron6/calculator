@@ -1,3 +1,8 @@
+@extends('layouts.app')
+
+@section('title', 'Редактор рабочих')
+
+@section('content')
 <div class="grid-3">
     @include('components.worker-card')
     
@@ -9,7 +14,13 @@
                 <span class="worker-name">{{ $worker->last_name }} {{ $worker->first_name }}</span>
                 <div class="worker-actions">
                     <a href="/worker/edit/{{ $worker->id }}" class="btn-link" title="Редактировать"><i class="fas fa-pen"></i></a>
-                    <a href="/worker/delete/{{ $worker->id }}" class="btn-link" onclick="return confirm('Удалить рабочего?')" title="Удалить"><i class="fas fa-trash"></i></a>
+                    <form action="/worker/delete/{{ $worker->id }}" method="POST" style="display: inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-link" onclick="return confirm('Удалить рабочего?')" title="Удалить">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
             @endforeach
@@ -30,13 +41,19 @@
         <div class="groups-list" style="margin-top: 20px;">
             @forelse($groups as $group)
             <div class="group-card {{ $selectedGroupId == $group->id ? 'selected' : '' }}">
-                <a href="?tab=workers&group_id={{ $group->id }}" class="group-link">
+                <a href="?group_id={{ $group->id }}" class="group-link">
                     <i class="fas fa-folder"></i> {{ $group->name }}
                     <span class="group-count">({{ $group->workers->count() }})</span>
                 </a>
                 <div class="group-actions">
                     <a href="/group/edit/{{ $group->id }}" class="btn-link" title="Редактировать"><i class="fas fa-pen"></i></a>
-                    <a href="/group/delete/{{ $group->id }}" class="btn-link" onclick="return confirm('Удалить группу?')" title="Удалить"><i class="fas fa-trash"></i></a>
+                    <form action="/group/delete/{{ $group->id }}" method="POST" style="display: inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-link" onclick="return confirm('Удалить группу?')" title="Удалить">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
             @empty
@@ -87,3 +104,4 @@
     </div>
 </div>
 @endif
+@endsection
