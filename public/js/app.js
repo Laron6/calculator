@@ -16,46 +16,6 @@ function changeValue(inputId, delta, minVal, maxVal) {
     }
 }
 
-// Валидация формы редактирования рабочего
-document.querySelector('form[action^="/worker/update/"]')?.addEventListener('submit', function(e) {
-    let lastName = document.querySelector('input[name="last_name"]').value.trim();
-    let firstName = document.querySelector('input[name="first_name"]').value.trim();
-    let age = parseInt(document.querySelector('input[name="age"]').value);
-    let experience = parseInt(document.querySelector('input[name="experience"]').value);
-    let errors = [];
-    
-    let nameRegex = /^[а-яА-ЯёЁ-]+$/;
-    if (!nameRegex.test(lastName)) {
-        errors.push('Фамилия может содержать только русские буквы и дефис');
-    }
-    if (!nameRegex.test(firstName)) {
-        errors.push('Имя может содержать только русские буквы и дефис');
-    }
-    
-    if (age < 18) {
-        errors.push('Возраст должен быть не менее 18 лет');
-    }
-    if (age > 100) {
-        errors.push('Возраст не должен превышать 100 лет');
-    }
-    
-    if (experience < 0) {
-        errors.push('Стаж не может быть отрицательным');
-    }
-    if (experience > 80) {
-        errors.push('Стаж не должен превышать 80 лет');
-    }
-    if (experience > (age - 18)) {
-        errors.push('Стаж не может быть больше возраста минус 18 лет');
-    }
-    
-    if (errors.length > 0) {
-        e.preventDefault();
-        alert(errors.join('\n'));
-        return false;
-    }
-});
-
 // Обработка выбора файла для импорта
 document.getElementById('fileInput')?.addEventListener('change', function(e) {
     var fileName = e.target.files[0]?.name || 'Файл не выбран';
