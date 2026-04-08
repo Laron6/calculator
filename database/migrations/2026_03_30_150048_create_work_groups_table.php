@@ -8,16 +8,15 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('group_worker', function (Blueprint $table) {
+        Schema::create('work_groups', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('work_group_id')->constrained()->onDelete('cascade');
-            $table->foreignId('worker_id')->constrained()->onDelete('cascade');
+            $table->string('name');
             $table->timestamps();
         });
     }
     
     public function down()
     {
-        Schema::dropIfExists('group_worker');
+        Schema::dropIfExists('work_groups');
     }
 };
