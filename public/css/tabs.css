@@ -44,6 +44,7 @@
 
 .tab-content {
     padding: 40px;
+    padding-top: 30px;
     display: none;
     animation: fadeIn 0.5s ease;
 }
@@ -60,5 +61,22 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* Мобильная версия */
+@media (max-width: 768px) {
+    .tabs-wrapper {
+        padding: 0 20px;
+    }
+    
+    .tab {
+        padding: 10px 20px;
+        font-size: 13px;
+    }
+    
+    .tab-content {
+        padding: 20px;
+        padding-top: 20px;
     }
 }
