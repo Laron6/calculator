@@ -56,11 +56,12 @@ class HomeController extends Controller
                         $decisions = $solver->solveByGauss();
                         $calculatedMetrics = $solver->getMetrics();
                         
-                        Log::info('=== КАЛЬКУЛЯТОР ===');
-                        Log::info('Группа: ' . $selectedGroup->name);
-                        Log::info('Кол-во рабочих: ' . count($selectedGroup->workers));
-                        Log::info('BVec: ' . json_encode($bVec));
-                        Log::info('Decisions: ' . json_encode($decisions));
+                        Log::info('Расчёт производительности', [
+                            'group' => $selectedGroup->name,
+                            'workers_count' => count($selectedGroup->workers),
+                            'bVec' => $bVec,
+                            'decisions' => $decisions
+                        ]);
                         
                         $workerArray = $selectedGroup->workers->values();
                         foreach ($workerArray as $i => $worker) {
@@ -81,16 +82,24 @@ class HomeController extends Controller
                 }
             }
             
-            $activeTab = $request->get('tab', 'workers');
+            $tab = $request->get('tab', 'workers');
             
-            return view('layouts.app', compact(
+            if ($tab === 'statistics') {
+                return view('statistics.index', compact(
+                    'workers', 'groups', 'selectedGroup', 'selectedGroupId',
+                    'productivityValues', 'calculatedResults', 'calculatedMetrics',
+                    'showResults', 'showAlternative', 'alternativeResults'
+                ));
+            }
+            
+            return view('workers.index', compact(
                 'workers', 'groups', 'selectedGroup', 'selectedGroupId',
                 'productivityValues', 'calculatedResults', 'calculatedMetrics',
-                'showResults', 'showAlternative', 'alternativeResults', 'activeTab'
+                'showResults', 'showAlternative', 'alternativeResults'
             ));
         } catch (\Exception $e) {
             Log::error('Ошибка в index: ' . $e->getMessage());
-            return view('layouts.app')->with('error', 'Произошла ошибка при загрузке данных');
+            return view('workers.index')->with('error', 'Произошла ошибка при загрузке данных');
         }
     }
 }
