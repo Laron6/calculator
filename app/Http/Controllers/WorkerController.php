@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Worker;
 use App\Services\WorkerService;
 use App\Http\Requests\WorkerRequest;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
 
 class WorkerController extends Controller
 {
@@ -17,53 +15,29 @@ class WorkerController extends Controller
         $this->workerService = $workerService;
     }
     
-    public function addWorker(WorkerRequest $request)
+    public function store(WorkerRequest $request)
     {
-        try {
-            $this->workerService->create($request->validated());
-            return redirect()->route('home', ['tab' => 'workers'])->with('success', 'Рабочий добавлен');
-        } catch (ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors())->withInput();
-        } catch (\Exception $e) {
-            Log::error('Ошибка добавления рабочего: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Ошибка при добавлении рабочего')->withInput();
-        }
+        $this->workerService->create($request->validated());
+        return redirect()->route('home', ['tab' => 'workers'])->with('success', 'Рабочий добавлен');
     }
     
-    public function editWorker($id)
+    public function edit($id)
     {
-        try {
-            $worker = Worker::findOrFail($id);
-            return view('pages.edit-worker', compact('worker'));
-        } catch (\Exception $e) {
-            Log::error('Ошибка редактирования рабочего: ' . $e->getMessage());
-            return redirect()->route('home')->with('error', 'Рабочий не найден');
-        }
+        $worker = Worker::findOrFail($id);
+        return view('pages.edit-worker', compact('worker'));
     }
     
-    public function updateWorker(WorkerRequest $request, $id)
+    public function update(WorkerRequest $request, $id)
     {
-        try {
-            $worker = Worker::findOrFail($id);
-            $this->workerService->update($worker, $request->validated());
-            return redirect()->route('home', ['tab' => 'workers'])->with('success', 'Рабочий обновлен');
-        } catch (ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors())->withInput();
-        } catch (\Exception $e) {
-            Log::error('Ошибка обновления рабочего: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Ошибка при обновлении рабочего')->withInput();
-        }
+        $worker = Worker::findOrFail($id);
+        $this->workerService->update($worker, $request->validated());
+        return redirect()->route('home', ['tab' => 'workers'])->with('success', 'Рабочий обновлен');
     }
     
-    public function deleteWorker($id)
+    public function destroy($id)
     {
-        try {
-            $worker = Worker::findOrFail($id);
-            $this->workerService->delete($worker);
-            return redirect()->route('home', ['tab' => 'workers'])->with('success', 'Рабочий удален');
-        } catch (\Exception $e) {
-            Log::error('Ошибка удаления рабочего: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Ошибка при удалении рабочего');
-        }
+        $worker = Worker::findOrFail($id);
+        $this->workerService->delete($worker);
+        return redirect()->route('home', ['tab' => 'workers'])->with('success', 'Рабочий удален');
     }
 }
