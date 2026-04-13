@@ -150,6 +150,16 @@ body[data-theme="dark"] .number-btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
+/* Стили для приветствия пользователя в шапке (тёмная тема) */
+body[data-theme="dark"] .welcome-message i,
+body[data-theme="dark"] .welcome-message span {
+    color: white;
+}
+
+body[data-theme="dark"] .welcome-message {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
 
 /* Светлая тема */
 body[data-theme="light"] {
@@ -438,6 +448,17 @@ body[data-theme="light"] .number-btn {
     background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
 }
 
+/* Стили для приветствия пользователя в шапке (светлая тема) */
+body[data-theme="light"] .welcome-message i,
+body[data-theme="light"] .welcome-message span {
+    color: #1e1b4b;
+}
+
+body[data-theme="light"] .welcome-message {
+    background: rgba(0, 0, 0, 0.06);
+    border: 1px solid #d1d5db;
+}
+
 /* Декоративные точки и оверлей для тёмной темы */
 body[data-theme="dark"]::before {
     content: '';
@@ -497,7 +518,7 @@ body[data-theme="light"] .container {
     z-index: 1;
 }
 
-/* Кнопка пеоекдючения темы */
+/* Кнопка переключения темы */
 .theme-toggle {
     position: fixed;
     bottom: 30px;
