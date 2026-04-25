@@ -6,7 +6,7 @@
 <div class="grid-3">
     <div class="card full-width">
         <div class="flex-between">
-            <h3><i class="fas fa-chart-line"></i> Графики</h3>
+            <h3><i class="fas fa-chart-line"></i> График производительности труда</h3>
         </div>
 
         @if($groups->count() > 0)
@@ -30,23 +30,19 @@
             </div>
         @elseif(!$selectedGroup)
             <div class="alert alert-info" style="text-align: center; margin: 40px 0;">
-                <i class="fas fa-info-circle"></i> Выберите группу для отображения графиков
+                <i class="fas fa-info-circle"></i> Выберите группу для отображения графика
             </div>
-        @elseif($selectedGroup && $selectedGroup->workers->count() > 0 && count($bVec) > 0)
+        @elseif($selectedGroup && $selectedGroup->workers->count() > 0 && count($productivities) > 0)
             <div class="chart-container" style="background: rgba(255,255,255,0.05); border-radius: 24px; padding: 24px; margin-top: 24px;">
                 <canvas id="productivityChart"></canvas>
-            </div>
-            <div class="chart-container" style="background: rgba(255,255,255,0.05); border-radius: 24px; padding: 24px; margin-top: 24px;">
-                <canvas id="decisionsChart"></canvas>
             </div>
             @push('scripts')
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script src="{{ asset('js/charts.js') }}"></script>
             <script>
                 const labels = {!! json_encode($labels) !!};
-                const bVec = {!! json_encode($bVec) !!};
-                const decisions = {!! json_encode($decisions) !!};
-                initCharts(labels, bVec, decisions);
+                const productivities = {!! json_encode($productivities) !!};
+                initChart(labels, productivities);
             </script>
             @endpush
         @elseif($selectedGroup && $selectedGroup->workers->count() > 0)

@@ -35,7 +35,6 @@ Route::middleware('auth')->group(function () {
         // Производительность
         Route::post('/{groupId}/productivity', [ProductivityController::class, 'saveProductivity'])->name('productivity.save');
         Route::get('/{groupId}/calculate', [ProductivityController::class, 'calculate'])->name('productivity.calculate');
-        Route::get('/{groupId}/calculate-alternative', [ProductivityController::class, 'calculateAlternative'])->name('productivity.calculateAlternative');
     });
     
     // Импорт/экспорт
