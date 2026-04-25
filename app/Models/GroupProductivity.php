@@ -12,9 +12,11 @@ class GroupProductivity extends Model
 {
     use HasFactory, GroupProductivityAttributes, GroupProductivityScopes, GroupProductivityRelations;
     
-    protected $fillable = ['work_group_id', 'worker_id', 'value'];
+    protected $fillable = ['work_group_id', 'worker_id', 'value', 'volume', 'time'];
     
     protected $casts = [
-        'value' => 'float'
+        'value' => 'float',
+        'volume' => 'integer',
+        'time' => 'integer'
     ];
 }
