@@ -1,86 +1,86 @@
-// Инициализация графиков производительности
-function initCharts(labels, bVec, decisions) {
-    const ctx1 = document.getElementById('productivityChart');
-    const ctx2 = document.getElementById('decisionsChart');
+// Инициализация графика производительности
+let productivityChartInstance = null;
+
+function initChart(labels, productivities) {
+    const ctx = document.getElementById('productivityChart');
+    if (!ctx) return;
+    
+    // Уничтожаем старый график, если он существует
+    if (productivityChartInstance) {
+        productivityChartInstance.destroy();
+    }
+    
     const isMobile = window.innerWidth < 768;
     
-    // Общие настройки для обоих графиков
-    const baseOptions = {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-            legend: {
-                labels: {
-                    color: '#333',
-                    font: { size: 12 }
-                }
-            }
+    productivityChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Производительность труда (шт/ч)',
+                data: productivities,
+                borderColor: '#43e97b',
+                backgroundColor: 'rgba(67,233,123,0.1)',
+                borderWidth: 2,
+                pointRadius: isMobile ? 3 : 5,
+                pointBackgroundColor: '#43e97b',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                tension: 0.2,
+                fill: true
+            }]
         },
-        scales: {
-            y: {
-                grid: { color: 'rgba(0,0,0,0.1)' },
-                ticks: { color: '#333', font: { size: 11 } }
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#333',
+                        font: { size: isMobile ? 10 : 12 }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.parsed.y.toFixed(2) + ' шт/ч';
+                        }
+                    }
+                }
             },
-            x: {
-                grid: { color: 'rgba(0,0,0,0.1)' },
-                ticks: { 
-                    color: '#333', 
-                    font: { size: 11 },
-                    rotation: 0
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Производительность (шт/ч)',
+                        color: '#333'
+                    },
+                    grid: { color: 'rgba(0,0,0,0.1)' },
+                    ticks: { 
+                        color: '#333', 
+                        font: { size: isMobile ? 9 : 11 },
+                        callback: function(value) {
+                            return value.toFixed(0);
+                        }
+                    },
+                    beginAtZero: true
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Рабочие',
+                        color: '#333'
+                    },
+                    grid: { color: 'rgba(0,0,0,0.1)' },
+                    ticks: { 
+                        color: '#333', 
+                        font: { size: isMobile ? 8 : 11 },
+                        rotation: isMobile ? 45 : 0,
+                        maxRotation: 45,
+                        minRotation: isMobile ? 45 : 0
+                    }
                 }
             }
         }
-    };
-    
-    // Мобильные настройки (только если телефон)
-    if (isMobile) {
-        baseOptions.plugins.legend.labels.font.size = 9;
-        baseOptions.scales.y.ticks.font.size = 8;
-        baseOptions.scales.x.ticks.font.size = 7;
-        baseOptions.scales.x.ticks.rotation = 45;
-        baseOptions.scales.x.ticks.maxRotation = 45;
-        baseOptions.scales.x.ticks.minRotation = 45;
-    }
-    
-    if (ctx1) {
-        new Chart(ctx1, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Продуктивность группы без рабочего',
-                    data: bVec,
-                    borderColor: '#667eea',
-                    backgroundColor: 'rgba(102,126,234,0.1)',
-                    borderWidth: 2,
-                    pointRadius: isMobile ? 2 : 4,
-                    pointBackgroundColor: '#667eea',
-                    tension: 0.1,
-                    fill: true
-                }]
-            },
-            options: baseOptions
-        });
-    }
-    
-    if (ctx2) {
-        new Chart(ctx2, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Продуктивность рабочего',
-                    data: decisions,
-                    borderColor: '#43e97b',
-                    backgroundColor: 'rgba(67,233,123,0.1)',
-                    borderWidth: 2,
-                    pointRadius: isMobile ? 2 : 4,
-                    pointBackgroundColor: '#43e97b',
-                    tension: 0.1,
-                    fill: true
-                }]
-            },
-            options: baseOptions
-        });
-    }
+    });
 }
