@@ -10,28 +10,16 @@ class ProductivitySolver
     private WorkGroup $group;
     private array $bVec = [];
     private array $decisions = [];
-    private array $koeff;
-    private array $D;
-    
-    private GaussSolver $gauss;
-    private MatrixDeterminant $determinant;
-    private MetricsCalculator $metrics;
-    private AlternativeProductivity $alternative;
     
     public function __construct(WorkGroup $group)
     {
         $this->group = $group->load('workers');
         $this->loadProductivityData();
-        
-        $this->koeff = config('productivity.koeff');
-        $this->D = config('productivity.D');
-        
-        $this->gauss = new GaussSolver();
-        $this->determinant = new MatrixDeterminant();
-        $this->metrics = new MetricsCalculator();
-        $this->alternative = new AlternativeProductivity();
     }
     
+    /**
+     * Загрузка данных производительности (объём и время)
+     */
     private function loadProductivityData(): void
     {
         $workers = $this->group->workers;
@@ -40,119 +28,92 @@ class ProductivitySolver
             $prod = GroupProductivity::where('work_group_id', $this->group->id)
                 ->where('worker_id', $worker->id)
                 ->first();
-            $this->bVec[$index] = $prod ? (float)$prod->value : 0;
-        }
-        
-        for ($i = count($this->bVec); $i < 9; $i++) {
-            $this->bVec[$i] = 0;
+            
+            // Сохраняем объём и время для каждого рабочего
+            if ($prod) {
+                $this->bVec[$index] = [
+                    'volume' => $prod->volume ?? 0,
+                    'time' => $prod->time ?? 0,
+                    'productivity' => $prod->value ?? 0
+                ];
+            } else {
+                $this->bVec[$index] = [
+                    'volume' => 0,
+                    'time' => 0,
+                    'productivity' => 0
+                ];
+            }
         }
     }
     
-    public function solveByGauss(): array
+    /**
+     * Расчёт производительности по формуле ПТ = V / T
+     * 
+     * @return array Массив производительности для каждого рабочего
+     */
+    public function calculateProductivity(): array
     {
         $n = count($this->group->workers);
+        $this->decisions = [];
         
-        $hasData = false;
-        foreach ($this->bVec as $val) {
-            if ($val > 0) {
-                $hasData = true;
-                break;
+        foreach ($this->group->workers as $index => $worker) {
+            $volume = $this->bVec[$index]['volume'] ?? 0;
+            $time = $this->bVec[$index]['time'] ?? 0;
+            
+            // Формула: производительность = объём / время
+            if ($time > 0 && $volume > 0) {
+                $productivity = $volume / $time;
+            } else {
+                $productivity = 0;
             }
+            
+            $this->decisions[$index] = round($productivity, 2);
         }
         
-        if (!$hasData) {
-            return array_fill(0, $n, 0);
-        }
-        
-        $matrix = $this->createMatrix($n);
-        $matrix = $this->gauss->solve($matrix, $n);
-        $this->decisions = $this->gauss->backSubstitution($matrix, $n);
-        
-        foreach ($this->decisions as $i => $val) {
-            if ($val < 0) $this->decisions[$i] = 0;
-            $this->decisions[$i] = round($this->decisions[$i], 2);
-        }
-        
-        return array_slice($this->decisions, 0, $n);
-    }
-    
-    private function createMatrix(int $n): array
-    {
-        $matrix = [];
-        
-        for ($i = 0; $i < $n; $i++) {
-            $matrix[$i] = [];
-            for ($j = 0; $j < $n; $j++) {
-                $matrix[$i][$j] = ($i == $j) ? 0 : 1;
-            }
-            $matrix[$i][$n] = $this->bVec[$i] ?? 0;
-        }
-        
-        for ($i = 0; $i < $n - 1; $i++) {
-            for ($j = 0; $j <= $n; $j++) {
-                $matrix[$i][$j] += $matrix[$i + 1][$j];
-            }
-        }
-        
-        for ($j = 0; $j <= $n; $j++) {
-            $matrix[$n - 1][$j] += $matrix[0][$j];
-        }
-        
-        return $matrix;
-    }
-    
-    public function solveByCramer(): array
-    {
-        $n = count($this->group->workers);
-        if ($n === 0) return [];
-        
-        $matrix = [];
-        for ($i = 0; $i < $n; $i++) {
-            $matrix[$i] = [];
-            for ($j = 0; $j < $n; $j++) {
-                $matrix[$i][$j] = ($i == $j) ? 0 : 1;
-            }
-        }
-        
-        $bVecSlice = array_slice($this->bVec, 0, $n);
-        $cramer = new CramerSolver();
-        $decisions = $cramer->solve($matrix, $bVecSlice);
-        
-        foreach ($decisions as $i => $val) {
-            if ($val < 0) $decisions[$i] = 0;
-            $decisions[$i] = round($decisions[$i], 2);
-        }
-        
-        $this->decisions = $decisions;
         return $this->decisions;
     }
     
-    public function getMetrics(): array
+    /**
+     * Получить производительность всей группы (суммарная)
+     */
+    public function getTotalProductivity(): float
     {
-        if (empty($this->decisions)) {
-            $this->solveByGauss();
+        $total = 0;
+        foreach ($this->decisions as $val) {
+            $total += $val;
         }
-        return $this->metrics->calculate($this->decisions);
+        return round($total, 2);
     }
     
-    public function solveAlternative(): array
+    /**
+     * Получить среднюю производительность по группе
+     */
+    public function getAverageProductivity(): float
     {
-        $n = count($this->group->workers);
-        if ($n < 3) return ['decisions' => [], 'L' => 0, 'R' => 0];
+        if (count($this->decisions) === 0) return 0;
+        $total = $this->getTotalProductivity();
+        return round($total / count($this->decisions), 2);
+    }
+    
+    /**
+     * Получить данные для графиков
+     */
+    public function getChartData(): array
+    {
+        $labels = [];
+        $productivities = [];
         
-        $result = $this->alternative->calculate();
-        $decisions = [];
+        foreach ($this->group->workers as $worker) {
+            $labels[] = $worker->short_name;
+        }
         
-        for ($i = 0; $i < $n; $i++) {
-            $val = ($i < 9) ? ($result['X'][$i] ?? 0) : 0;
-            if ($val < 0) $val = 0;
-            $decisions[] = round($val, 2);
+        foreach ($this->decisions as $prod) {
+            $productivities[] = $prod;
         }
         
         return [
-            'decisions' => $decisions,
-            'L' => $result['L'],
-            'R' => $result['R']
+            'labels' => $labels,
+            'productivities' => $productivities
         ];
     }
     
@@ -163,6 +124,9 @@ class ProductivitySolver
     
     public function getDecisions(): array
     {
+        if (empty($this->decisions)) {
+            $this->calculateProductivity();
+        }
         return $this->decisions;
     }
 }
