@@ -34,32 +34,25 @@ class HomeController extends Controller
             
             $selectedGroupId = $request->get('group_id');
             $selectedGroup = null;
-            $productivityValues = [];
+            $volumes = [];
+            $times = [];
             $calculatedResults = [];
-            $calculatedMetrics = ['L' => 0, 'R' => 0];
-            $alternativeResults = [];
             $showResults = $request->get('calculated') == 1;
-            $showAlternative = $request->get('alternative') == 1;
             
             if ($selectedGroupId) {
                 $selectedGroup = WorkGroup::with('workers')->find($selectedGroupId);
                 if ($selectedGroup) {
-                    $productivities = $this->productivityService->getProductivities($selectedGroupId);
-                    
-                    foreach ($selectedGroup->workers as $worker) {
-                        $productivityValues[$worker->id] = $productivities[$worker->id]->value ?? '';
-                    }
+                    // Получаем сохранённые объёмы и время
+                    $volumes = $this->productivityService->getVolumes($selectedGroupId);
+                    $times = $this->productivityService->getTimes($selectedGroupId);
                     
                     if ($showResults) {
                         $solver = new ProductivitySolver($selectedGroup);
-                        $bVec = $solver->getBVec();
-                        $decisions = $solver->solveByGauss();
-                        $calculatedMetrics = $solver->getMetrics();
+                        $decisions = $solver->calculateProductivity();
                         
                         Log::info('Расчёт производительности', [
                             'group' => $selectedGroup->name,
                             'workers_count' => count($selectedGroup->workers),
-                            'bVec' => $bVec,
                             'decisions' => $decisions
                         ]);
                         
@@ -67,17 +60,9 @@ class HomeController extends Controller
                         foreach ($workerArray as $i => $worker) {
                             $calculatedResults[] = [
                                 'worker' => $worker,
-                                'productivity' => round($decisions[$i] ?? 0, 2)
+                                'productivity' => $decisions[$i] ?? 0
                             ];
                         }
-                    }
-                    
-                    if ($showAlternative) {
-                        $solver = new ProductivitySolver($selectedGroup);
-                        $alt = $solver->solveAlternative();
-                        $alternativeResults = $alt['decisions'];
-                        $calculatedMetrics['L_alt'] = $alt['L'];
-                        $calculatedMetrics['R_alt'] = $alt['R'];
                     }
                 }
             }
@@ -87,15 +72,14 @@ class HomeController extends Controller
             if ($tab === 'statistics') {
                 return view('statistics.index', compact(
                     'workers', 'groups', 'selectedGroup', 'selectedGroupId',
-                    'productivityValues', 'calculatedResults', 'calculatedMetrics',
-                    'showResults', 'showAlternative', 'alternativeResults'
+                    'volumes', 'times', 'calculatedResults',
+                    'showResults'
                 ));
             }
             
             return view('workers.index', compact(
                 'workers', 'groups', 'selectedGroup', 'selectedGroupId',
-                'productivityValues', 'calculatedResults', 'calculatedMetrics',
-                'showResults', 'showAlternative', 'alternativeResults'
+                'volumes', 'times', 'calculatedResults', 'showResults'
             ));
         } catch (\Exception $e) {
             Log::error('Ошибка в index: ' . $e->getMessage());
