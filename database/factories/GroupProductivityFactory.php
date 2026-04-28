@@ -11,8 +11,14 @@ class GroupProductivityFactory extends Factory
 
     public function definition(): array
     {
+        $volume = $this->faker->numberBetween(1, 5000);
+        $time = $this->faker->numberBetween(1, 100);
+        $productivity = round($volume / $time, 2);
+        
         return [
-            'value' => $this->faker->randomFloat(2, 0, 100),
+            'volume' => $volume,
+            'time' => $time,
+            'value' => $productivity,
             'created_at' => now(),
             'updated_at' => now(),
         ];

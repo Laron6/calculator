@@ -19,10 +19,20 @@
     transition: all 0.3s ease;
 }
 
+/* Карточка для страницы устройств */
+.devices-card {
+    max-width: 600px;
+}
+
 body[data-theme="light"] .auth-card {
     background: rgba(255, 255, 255, 0.95);
     border: 1px solid rgba(0, 0, 0, 0.1);
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+
+/* Шапка страниц аутентификации */
+.auth-header {
+    text-align: center;
 }
 
 .auth-logo {
@@ -96,6 +106,7 @@ body[data-theme="light"] .auth-subtitle {
     color: #6b7280;
 }
 
+/* Блоки информации */
 .auth-info {
     margin-top: 25px;
     border-radius: 12px;
@@ -158,16 +169,94 @@ body[data-theme="light"] .auth-info-text strong {
     color: #1e1b4b;
 }
 
+/* Разделитель */
 .auth-divider {
     margin-top: 25px;
     padding-top: 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.auth-divider-center {
+    text-align: center;
+}
+
 body[data-theme="light"] .auth-divider {
     border-top: 1px solid #e5e7eb;
 }
 
+.auth-text {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13px;
+}
+
+.auth-text-margin {
+    margin-bottom: 15px;
+}
+
+body[data-theme="light"] .auth-text {
+    color: #6b7280;
+}
+
+/* Кнопки на странице устройств */
+.devices-header {
+    text-align: center;
+}
+
+.devices-alert {
+    margin: 15px 0;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.terminate-all-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.terminate-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 28px;
+}
+
+.terminate-session-btn {
+    padding: 6px 16px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.device-info {
+    flex: 1;
+}
+
+.no-devices {
+    margin-top: 20px;
+}
+
+.security-info {
+    margin-top: 20px;
+}
+
+/* Уведомления об ошибках */
+.auth-alert {
+    margin-bottom: 20px;
+}
+
+.error-message {
+    color: #f5576c;
+    font-size: 11px;
+    display: block;
+    margin-top: 5px;
+}
+
+.error-list {
+    margin: 5px 0 0 20px;
+    padding: 0;
+}
+
+/* Основные кнопки */
 .btn-login {
     width: 100%;
     padding: 16px;
@@ -217,15 +306,9 @@ body[data-theme="light"] .auth-divider {
 }
 
 @keyframes pulse-login {
-    0% {
-        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
-    }
+    0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(102, 126, 234, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
 }
 
 .btn-register-auth {
@@ -326,15 +409,9 @@ body[data-theme="light"] .auth-divider {
 }
 
 @keyframes pulse-register {
-    0% {
-        box-shadow: 0 0 0 0 rgba(67, 233, 123, 0.4);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(67, 233, 123, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(67, 233, 123, 0);
-    }
+    0% { box-shadow: 0 0 0 0 rgba(67, 233, 123, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(67, 233, 123, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(67, 233, 123, 0); }
 }
 
 .btn-logout {
@@ -358,6 +435,7 @@ body[data-theme="light"] .btn-logout:hover {
     color: #dc2626;
 }
 
+/* Ссылки */
 .auth-link {
     color: #667eea;
     text-decoration: none;
@@ -385,15 +463,7 @@ body[data-theme="light"] .auth-link.register {
     color: #059669;
 }
 
-.auth-text {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 13px;
-}
-
-body[data-theme="light"] .auth-text {
-    color: #6b7280;
-}
-
+/* Подсказки для пароля */
 .password-hint {
     color: rgba(255, 255, 255, 0.4);
     font-size: 11px;
@@ -410,17 +480,18 @@ body[data-theme="light"] .password-hint {
     margin-right: 4px;
 }
 
-.password-requirements {
-    display: inline-block;
+.password-requirements-list {
     margin-top: 5px;
+    padding-left: 20px;
 }
 
-.password-requirements li {
+.password-requirements-list li {
     list-style: none;
     font-size: 11px;
     margin-top: 2px;
 }
 
+/* Устройства */
 .device-item {
     display: flex;
     justify-content: space-between;
@@ -471,6 +542,7 @@ body[data-theme="light"] .device-meta {
     color: white;
 }
 
+/* Кнопка предупреждения */
 .btn-warning {
     background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     color: white;
@@ -487,75 +559,7 @@ body[data-theme="light"] .device-meta {
     box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
 }
 
-@media (max-width: 768px) {
-    .auth-card {
-        padding: 24px;
-    }
-    
-    .auth-logo {
-        width: 55px;
-        height: 55px;
-    }
-    
-    .auth-logo i {
-        font-size: 24px;
-    }
-    
-    .auth-title {
-        font-size: 22px;
-    }
-    
-    .btn-login, .btn-submit-register {
-        padding: 14px;
-        font-size: 14px;
-    }
-    
-    .btn-register-auth {
-        padding: 10px 20px;
-        font-size: 13px;
-        min-width: 160px;
-    }
-    
-    .device-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-    
-    .device-badge {
-        align-self: flex-start;
-    }
-}
-
-@media (max-width: 480px) {
-    .auth-card {
-        padding: 20px;
-    }
-    
-    .auth-title {
-        font-size: 18px;
-    }
-    
-    .auth-subtitle {
-        font-size: 12px;
-    }
-    
-    .btn-login, .btn-submit-register {
-        padding: 12px;
-        font-size: 13px;
-    }
-}
-
-.arrow-icon {
-    transition: transform 0.3s ease;
-}
-
-.btn-login:hover .arrow-icon,
-.btn-register-auth:hover .arrow-icon,
-.btn-submit-register:hover .arrow-icon {
-    transform: translateX(5px);
-}
-
+/* Чекбокс */
 .checkbox-label {
     display: flex;
     align-items: center;
@@ -581,4 +585,15 @@ body[data-theme="dark"] .checkbox-label span {
 
 body[data-theme="light"] .checkbox-label span {
     color: #4b5563;
+}
+
+/* Стрелка в кнопках */
+.arrow-icon {
+    transition: transform 0.3s ease;
+}
+
+.btn-login:hover .arrow-icon,
+.btn-register-auth:hover .arrow-icon,
+.btn-submit-register:hover .arrow-icon {
+    transform: translateX(5px);
 }

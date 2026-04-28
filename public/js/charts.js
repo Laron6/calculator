@@ -5,7 +5,6 @@ function initChart(labels, productivities) {
     const ctx = document.getElementById('productivityChart');
     if (!ctx) return;
     
-    // Уничтожаем старый график, если он существует
     if (productivityChartInstance) {
         productivityChartInstance.destroy();
     }
@@ -84,3 +83,15 @@ function initChart(labels, productivities) {
         }
     });
 }
+
+// Автоматическая инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    const canvas = document.getElementById('productivityChart');
+    
+    if (canvas) {
+        // Данные передаются через глобальные переменные из шаблона
+        if (window.chartLabels && window.chartProductivities) {
+            initChart(window.chartLabels, window.chartProductivities);
+        }
+    }
+});

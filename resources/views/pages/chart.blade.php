@@ -25,35 +25,35 @@
         @endif
 
         @if($groups->count() == 0)
-            <div class="alert alert-info" style="text-align: center; margin: 40px 0;">
+            <div class="alert alert-info chart-alert">
                 <i class="fas fa-info-circle"></i> Группы не созданы. Создайте группу на вкладке "Редактор рабочих"
             </div>
         @elseif(!$selectedGroup)
-            <div class="alert alert-info" style="text-align: center; margin: 40px 0;">
+            <div class="alert alert-info chart-alert">
                 <i class="fas fa-info-circle"></i> Выберите группу для отображения графика
             </div>
         @elseif($selectedGroup && $selectedGroup->workers->count() > 0 && count($productivities) > 0)
-            <div class="chart-container" style="background: rgba(255,255,255,0.05); border-radius: 24px; padding: 24px; margin-top: 24px;">
+            <div class="chart-container chart-container-styled">
                 <canvas id="productivityChart"></canvas>
             </div>
-            @push('scripts')
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            <script src="{{ asset('js/charts.js') }}"></script>
-            <script>
-                const labels = {!! json_encode($labels) !!};
-                const productivities = {!! json_encode($productivities) !!};
-                initChart(labels, productivities);
-            </script>
-            @endpush
         @elseif($selectedGroup && $selectedGroup->workers->count() > 0)
-            <div class="alert alert-info" style="text-align: center; margin: 40px 0;">
+            <div class="alert alert-info chart-alert">
                 <i class="fas fa-calculator"></i> Сначала выполните расчет производительности на вкладке "Статистика группы"
             </div>
         @elseif($selectedGroup)
-            <div class="alert alert-info" style="text-align: center; margin: 40px 0;">
+            <div class="alert alert-info chart-alert">
                 <i class="fas fa-users"></i> В группе нет рабочих
             </div>
         @endif
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ asset('js/charts.js') }}"></script>
+<script>
+    window.chartLabels = {!! json_encode($labels) !!};
+    window.chartProductivities = {!! json_encode($productivities) !!};
+</script>
+@endpush

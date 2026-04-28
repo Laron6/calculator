@@ -5,7 +5,7 @@
 @section('content')
 <div class="auth-container">
     <div class="auth-card">
-        <div style="text-align: center;">
+        <div class="auth-header">
             <div class="auth-logo login">
                 <i class="fas fa-chart-line"></i>
             </div>
@@ -19,9 +19,9 @@
         </div>
         
         @if ($errors->any())
-            <div class="alert alert-danger" style="margin-bottom: 20px;">
+            <div class="alert alert-danger auth-alert">
                 <i class="fas fa-exclamation-circle"></i>
-                <ul style="margin: 5px 0 0 20px; padding: 0;">
+                <ul class="error-list">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -36,7 +36,7 @@
                 <label><i class="fas fa-envelope"></i> Email</label>
                 <input type="email" name="email" value="{{ old('email') }}" placeholder="ivan@example.com" required>
                 @error('email')
-                    <small style="color: #f5576c; font-size: 11px; display: block; margin-top: 5px;">{{ $message }}</small>
+                    <small class="error-message">{{ $message }}</small>
                 @enderror
             </div>
             
@@ -44,7 +44,7 @@
                 <label><i class="fas fa-lock"></i> Пароль</label>
                 <input type="password" name="password" placeholder="••••••••" required>
                 @error('password')
-                    <small style="color: #f5576c; font-size: 11px; display: block; margin-top: 5px;">{{ $message }}</small>
+                    <small class="error-message">{{ $message }}</small>
                 @enderror
             </div>
             
@@ -62,8 +62,8 @@
             </button>
         </form>
         
-        <div class="auth-divider" style="text-align: center;">
-            <p class="auth-text" style="margin-bottom: 15px;">
+        <div class="auth-divider auth-divider-center">
+            <p class="auth-text auth-text-margin">
                 Нет аккаунта?
             </p>
             <a href="{{ route('register') }}" class="btn-register-auth">
@@ -76,9 +76,9 @@
         <div class="auth-info login">
             <i class="fas fa-calculator"></i>
             <div class="auth-info-text">
-            <strong>Расчёт производительности труда</strong><br>
-            После входа вам станут доступны: управление рабочими группами, 
-            ввод объёма продукции и времени, визуализация графиков и экспорт данных.
+                <strong>Расчёт производительности труда</strong><br>
+                После входа вам станут доступны: управление рабочими группами, 
+                ввод объёма продукции и времени, визуализация графиков и экспорт данных.
             </div>
         </div>
     </div>

@@ -4,8 +4,8 @@
         @csrf
         
         @if ($errors->any())
-            <div class="alert alert-danger" style="margin-bottom: 20px;">
-                <ul style="margin: 0; padding-left: 20px;">
+            <div class="alert alert-danger worker-card-alert">
+                <ul class="worker-error-list">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -47,13 +47,13 @@
         </div>
         <div class="form-group">
             <label>Пол</label>
-            <div style="display: flex; gap: 12px; margin-top: 8px;">
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px 20px; background: rgba(255,255,255,0.05); border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;">
-                    <input type="radio" name="gender" value="0" style="width: 18px; height: 18px; margin: 0;" checked>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="gender" value="0" checked>
                     <span><i class="fas fa-mars"></i> Мужской</span>
                 </label>
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px 20px; background: rgba(255,255,255,0.05); border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;">
-                    <input type="radio" name="gender" value="1" style="width: 18px; height: 18px; margin: 0;">
+                <label class="radio-label">
+                    <input type="radio" name="gender" value="1">
                     <span><i class="fas fa-venus"></i> Женский</span>
                 </label>
             </div>
@@ -66,22 +66,22 @@
     <hr>
 
     <div class="flex-between">
-        <h3 style="font-size: 16px;"><i class="fas fa-file-import"></i> Импорт/Экспорт</h3>
+        <h3 class="import-title"><i class="fas fa-file-import"></i> Импорт/Экспорт</h3>
     </div>
     <form action="/workers/import" method="POST" enctype="multipart/form-data" id="importForm">
         @csrf
-        <div style="margin-bottom: 16px;">
+        <div class="import-file-wrapper">
             <label for="fileInput" class="file-upload-label">
                 <i class="fas fa-folder-open"></i> Выберите файл (.lst)
             </label>
-            <input type="file" id="fileInput" name="file" accept=".lst,.txt" style="display: none;">
+            <input type="file" id="fileInput" name="file" accept=".lst,.txt">
             <span id="fileName" class="file-name">Файл не выбран</span>
         </div>
-        <button type="submit" class="btn btn-primary w-full" id="submitBtn" disabled style="opacity: 0.5;">
+        <button type="submit" class="btn btn-primary w-full import-submit-btn" id="submitBtn" disabled>
             <i class="fas fa-upload"></i> Загрузить список
         </button>
     </form>
-    <a href="/workers/export" class="btn btn-success w-full" style="margin-top: 12px; text-align: center;">
+    <a href="/workers/export" class="btn btn-success w-full export-link">
         <i class="fas fa-download"></i> Сохранить список (.lst)
     </a>
 </div>

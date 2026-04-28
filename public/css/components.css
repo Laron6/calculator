@@ -236,8 +236,6 @@
     background: rgba(102, 126, 234, 0.8);
 }
 
-/* Стили для шапки (header) */
-
 /* Контейнер для авторизованного пользователя */
 .user-menu {
     margin-top: 20px;
@@ -346,4 +344,177 @@ body[data-theme="light"] .welcome-message {
     display: flex;
     gap: 15px;
     justify-content: center;
+}
+
+/* Алерт ошибок в карточке */
+.worker-card-alert {
+    margin-bottom: 20px;
+}
+
+/* Список ошибок */
+.worker-error-list {
+    margin: 0;
+    padding-left: 20px;
+}
+
+/* Группа радиокнопок пола */
+.radio-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+/* Стиль радиокнопки */
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.radio-label:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.radio-label input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+}
+
+/* Светлая тема для радиокнопок */
+body[data-theme="light"] .radio-label {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+}
+
+body[data-theme="light"] .radio-label:hover {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: #667eea;
+}
+
+body[data-theme="light"] .radio-label span {
+    color: #1e1b4b;
+}
+
+/* Заголовок импорта */
+.import-title {
+    font-size: 16px;
+}
+
+/* Обёртка для импорта файла */
+.import-file-wrapper {
+    margin-bottom: 16px;
+}
+
+/* Скрытый инпут файла */
+#fileInput {
+    display: none;
+}
+
+/* Кнопка импорта (disabled по умолчанию) */
+.import-submit-btn {
+    opacity: 0.5;
+}
+
+.import-submit-btn:enabled {
+    opacity: 1;
+}
+
+/* Ссылка экспорта */
+.export-link {
+    margin-top: 12px;
+    text-align: center;
+}
+
+/* Карточка редактирования */
+.edit-card {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Алерты на страницах редактирования */
+.edit-alert {
+    margin-bottom: 20px;
+}
+
+.edit-error-alert {
+    margin-bottom: 20px;
+}
+
+/* Алерт на странице графиков */
+.chart-alert {
+    text-align: center;
+    margin: 40px 0;
+}
+
+/* Контейнер графика */
+.chart-container-styled {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    padding: 24px;
+    margin-top: 24px;
+}
+
+.statistics-alert {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.statistics-info-alert {
+    margin-bottom: 20px;
+}
+
+.statistics-error-alert {
+    margin-bottom: 20px;
+}
+
+.statistics-error-list {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.input-volume-time {
+    width: 120px;
+}
+
+.workers-form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+}
+
+.workers-create-form {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+}
+
+.workers-create-input {
+    flex: 1;
+    margin: 0;
+}
+
+.workers-create-btn {
+    padding: 12px 24px;
+    white-space: nowrap;
+}
+
+.workers-groups-list {
+    margin-top: 20px;
+}
+
+.workers-empty-alert {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.inline-form {
+    display: inline;
 }

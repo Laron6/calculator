@@ -28,6 +28,28 @@
     color: rgba(255, 255, 255, 0.9);
 }
 
+/* Стили для таблицы статистики */
+.worker-col {
+    width: 40%;
+}
+
+.volume-col,
+.time-col {
+    width: 30%;
+}
+
+.results-section {
+    margin-top: 28px;
+}
+
+.results-table td {
+    padding: 12px 8px;
+}
+
+.results-table td:first-child {
+    font-weight: 500;
+}
+
 .input-small {
     width: 120px;
     padding: 10px 12px;
@@ -85,4 +107,51 @@
     font-weight: 700;
     color: #43e97b;
     margin-left: 8px;
+}
+
+/* Адаптив для таблиц на мобилках */
+@media (max-width: 768px) {
+    .worker-col,
+    .volume-col,
+    .time-col {
+        width: auto;
+    }
+    
+    .table th,
+    .table td {
+        padding: 8px 6px;
+        font-size: 12px;
+    }
+    
+    .input-small {
+        width: 80px !important;
+        padding: 6px 4px;
+        font-size: 11px;
+    }
+    
+    .highlight {
+        font-size: 13px;
+    }
+    
+    .results-table td {
+        padding: 8px 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .table th,
+    .table td {
+        padding: 6px 4px;
+        font-size: 11px;
+    }
+    
+    .input-small {
+        width: 70px !important;
+        padding: 5px 3px;
+        font-size: 10px;
+    }
+    
+    .highlight {
+        font-size: 12px;
+    }
 }

@@ -3,17 +3,17 @@
 @section('title', 'Редактирование рабочего')
 
 @section('content')
-<div class="card" style="max-width: 600px; margin: 0 auto;">
+<div class="card edit-card">
     <h3><i class="fas fa-user-edit"></i> Редактирование рабочего</h3>
 
     @if(session('error'))
-        <div class="alert alert-danger" style="margin-bottom: 20px;">
+        <div class="alert alert-danger edit-alert">
             <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
         </div>
     @endif
 
     @if(session('success'))
-        <div class="alert alert-success" style="margin-bottom: 20px;">
+        <div class="alert alert-success edit-alert">
             <i class="fas fa-check-circle"></i> {{ session('success') }}
         </div>
     @endif
@@ -22,8 +22,8 @@
         @csrf
         
         @if ($errors->any())
-            <div class="alert alert-danger" style="margin-bottom: 20px;">
-                <ul style="margin: 0; padding-left: 20px;">
+            <div class="alert alert-danger edit-error-alert">
+                <ul class="error-list">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -70,13 +70,13 @@
         
         <div class="form-group">
             <label>Пол</label>
-            <div style="display: flex; gap: 12px; margin-top: 8px;">
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px 20px; background: rgba(255,255,255,0.05); border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;">
-                    <input type="radio" name="gender" value="0" style="width: 18px; height: 18px; margin: 0;" {{ $worker->gender == 0 ? 'checked' : '' }}>
+            <div class="radio-group">
+                <label class="radio-label">
+                    <input type="radio" name="gender" value="0" {{ $worker->gender == 0 ? 'checked' : '' }}>
                     <span><i class="fas fa-mars"></i> Мужской</span>
                 </label>
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px 20px; background: rgba(255,255,255,0.05); border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s ease;">
-                    <input type="radio" name="gender" value="1" style="width: 18px; height: 18px; margin: 0;" {{ $worker->gender == 1 ? 'checked' : '' }}>
+                <label class="radio-label">
+                    <input type="radio" name="gender" value="1" {{ $worker->gender == 1 ? 'checked' : '' }}>
                     <span><i class="fas fa-venus"></i> Женский</span>
                 </label>
             </div>

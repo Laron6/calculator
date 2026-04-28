@@ -9,6 +9,8 @@ use App\Auth\RegisterRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AuthController extends Controller
 {
@@ -26,12 +28,24 @@ class AuthController extends Controller
     
     public function login(LoginRequest $request)
     {
+        // Защита от брутфорса: максимум 5 попыток с одного IP за 1 минуту
+        $key = 'login_attempts_' . $request->ip();
+        
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $seconds = RateLimiter::availableIn($key);
+            return back()->withErrors([
+                'email' => 'Слишком много попыток входа. Попробуйте через ' . $seconds . ' секунд.',
+            ])->onlyInput('email');
+        }
+        
         $credentials = $request->only('email', 'password');
         
         if (Auth::attempt($credentials, $request->remember)) {
+            // Очищаем счётчик попыток при успешном входе
+            RateLimiter::clear($key);
+            
             $request->session()->regenerate();
             
-            // Регистрируем устройство ТОЛЬКО ЗДЕСЬ
             $this->deviceService->registerDevice(
                 auth()->user(),
                 $request->session()->getId(),
@@ -41,9 +55,12 @@ class AuthController extends Controller
             return redirect()->intended('/');
         }
         
+        // Увеличиваем счётчик неудачных попыток
+        RateLimiter::hit($key, 60);
+        
         return back()->withErrors([
             'email' => 'Неверный email или пароль',
-        ]);
+        ])->onlyInput('email');
     }
     
     public function showRegister()

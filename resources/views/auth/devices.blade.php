@@ -4,8 +4,8 @@
 
 @section('content')
 <div class="auth-container">
-    <div class="auth-card" style="max-width: 600px;">
-        <div style="text-align: center;">
+    <div class="auth-card devices-card">
+        <div class="devices-header">
             <div class="auth-logo devices">
                 <i class="fas fa-laptop"></i>
             </div>
@@ -18,13 +18,13 @@
         </div>
         
         @if(session('success'))
-        <div class="alert alert-success" style="margin: 15px 0; padding: 12px; border-radius: 12px;">
+        <div class="alert alert-success devices-alert">
             <i class="fas fa-check-circle"></i> {{ session('success') }}
         </div>
         @endif
         
         @if(session('error'))
-        <div class="alert alert-danger" style="margin: 15px 0; padding: 12px; border-radius: 12px;">
+        <div class="alert alert-danger devices-alert">
             <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
         </div>
         @endif
@@ -35,10 +35,10 @@
         @endphp
         
         @if($otherDevicesCount > 0)
-        <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+        <div class="terminate-all-wrapper">
             <form action="{{ route('devices.terminate-others') }}" method="POST" onsubmit="return confirm('Вы уверены? Все остальные сессии будут завершены. Текущая сессия останется активной.');">
                 @csrf
-                <button type="submit" class="btn-warning" style="display: inline-flex; align-items: center; gap: 10px; padding: 12px 28px;">
+                <button type="submit" class="btn-warning terminate-all-btn">
                     <i class="fas fa-power-off"></i> 
                     <span>Завершить все остальные сессии ({{ $otherDevicesCount }})</span>
                 </button>
@@ -48,7 +48,7 @@
         
         @foreach($devices as $device)
         <div class="device-item">
-            <div>
+            <div class="device-info">
                 <div class="device-name">
                     @php
                         $deviceIcon = 'fa-laptop';
@@ -73,7 +73,7 @@
             <form action="{{ route('devices.terminate', $device->id) }}" method="POST" onsubmit="return confirm('Завершить эту сессию? Пользователь будет вынужден войти заново.');">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn-danger" style="padding: 6px 16px; font-size: 12px; white-space: nowrap;">
+                <button type="submit" class="btn-danger terminate-session-btn">
                     <i class="fas fa-times-circle"></i> Завершить
                 </button>
             </form>
@@ -86,7 +86,7 @@
         @endforeach
         
         @if($devices->count() == 0)
-        <div class="auth-info devices" style="margin-top: 20px;">
+        <div class="auth-info devices no-devices">
             <i class="fas fa-info-circle"></i>
             <div class="auth-info-text">
                 <strong>Нет активных сессий</strong><br>
@@ -95,7 +95,7 @@
         </div>
         @endif
         
-        <div class="auth-info devices" style="margin-top: 20px;">
+        <div class="auth-info devices security-info">
             <i class="fas fa-shield-alt"></i>
             <div class="auth-info-text">
                 <strong>Безопасность</strong><br>

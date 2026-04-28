@@ -9,7 +9,7 @@
     </div>
 
     @if($groups->count() == 0)
-        <div class="alert alert-info" style="text-align: center; margin: 40px 0;">
+        <div class="alert alert-info statistics-alert">
             <i class="fas fa-info-circle"></i> Группы не созданы. Создайте группу на вкладке "Редактор рабочих"
         </div>
     @else
@@ -28,15 +28,15 @@
     @endif
 
     @if(!$selectedGroup && $groups->count() > 0)
-        <div class="alert alert-info" style="text-align: center; margin: 40px 0;">
+        <div class="alert alert-info statistics-alert">
             <i class="fas fa-info-circle"></i> Выберите группу для расчёта производительности
         </div>
     @elseif($selectedGroup && $selectedGroup->workers->count() == 0)
-        <div class="alert alert-info" style="text-align: center; margin: 40px 0;">
+        <div class="alert alert-info statistics-alert">
             <i class="fas fa-info-circle"></i> В группе нет рабочих. Добавьте рабочих в группу на вкладке "Редактор рабочих"
         </div>
     @elseif($selectedGroup && $selectedGroup->workers->count() > 0)
-        <div class="alert alert-info" style="margin-bottom: 20px;">
+        <div class="alert alert-info statistics-info-alert">
             <i class="fas fa-info-circle"></i> 
             Производительность труда рассчитывается по формуле: <strong>ПТ = V / T</strong>, где:<br>
             • <strong>V</strong> — объём выпущенной продукции (шт)<br>
@@ -47,8 +47,8 @@
             @csrf
             
             @if ($errors->any())
-                <div class="alert alert-danger" style="margin-bottom: 20px;">
-                    <ul style="margin: 0; padding-left: 20px;">
+                <div class="alert alert-danger statistics-error-alert">
+                    <ul class="statistics-error-list">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -60,24 +60,27 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Рабочий</th>
-                            <th>Объём продукции (шт)</th>
-                            <th>Затраченное время (ч)</th>
+                            <th class="worker-col">Рабочий</th>
+                            <th class="volume-col">Объём продукции (шт)</th>
+                            <th class="time-col">Затраченное время (ч)</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($selectedGroup->workers as $worker)
                         <tr>
-                            <td>{{ $worker->last_name }} {{ $worker->first_name }} {{ $worker->patronymic }}</td>
+                            <td>
+                                <strong>{{ $worker->last_name }} {{ $worker->first_name }}</strong><br>
+                                <small>{{ $worker->patronymic }}</small>
+                            </td>
                             <td>
                                 <input type="number" step="1" name="volumes[{{ $worker->id }}]" 
                                        value="{{ $volumes[$worker->id] ?? '' }}" 
-                                       placeholder="Объём, шт" class="input-small" style="width: 120px;">
+                                       placeholder="Объём, шт" class="input-small input-volume-time">
                             </td>
                             <td>
                                 <input type="number" step="0.5" name="times[{{ $worker->id }}]" 
                                        value="{{ $times[$worker->id] ?? '' }}" 
-                                       placeholder="Время, ч" class="input-small" style="width: 120px;">
+                                       placeholder="Время, ч" class="input-small input-volume-time">
                             </td>
                         </tr>
                         @endforeach
@@ -96,18 +99,21 @@
         $totalProductivity = array_sum(array_column($calculatedResults, 'productivity'));
         $averageProductivity = count($calculatedResults) > 0 ? round($totalProductivity / count($calculatedResults), 2) : 0;
     @endphp
-    <div class="mt-4">
+    <div class="mt-4 results-section">
         <h3><i class="fas fa-chart-line"></i> Результаты расчёта</h3>
         
         <div class="table-wrapper">
-            <table class="table">
+            <table class="table results-table">
                 <thead>
-                    <tr><th>Рабочий</th><th>Производительность труда (шт/ч)</th></tr>
+                    <tr>
+                        <th>Рабочий</th>
+                        <th>Производительность труда (шт/ч)</th>
+                    </tr>
                 </thead>
                 <tbody>
                     @foreach($calculatedResults as $res)
                     <tr>
-                        <td>{{ $res['worker']->last_name }} {{ $res['worker']->first_name }}</td>
+                        <td><strong>{{ $res['worker']->last_name }} {{ $res['worker']->first_name }}</strong></td>
                         <td class="highlight">{{ number_format($res['productivity'], 2) }} шт/ч</td>
                     </tr>
                     @endforeach

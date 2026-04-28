@@ -3,17 +3,17 @@
 @section('title', 'Редактирование группы')
 
 @section('content')
-<div class="card" style="max-width: 600px; margin: 0 auto;">
+<div class="card edit-card">
     <h3><i class="fas fa-edit"></i> Редактирование группы</h3>
 
     @if(session('error'))
-        <div class="alert alert-danger" style="margin-bottom: 20px;">
+        <div class="alert alert-danger edit-alert">
             <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
         </div>
     @endif
 
     @if(session('success'))
-        <div class="alert alert-success" style="margin-bottom: 20px;">
+        <div class="alert alert-success edit-alert">
             <i class="fas fa-check-circle"></i> {{ session('success') }}
         </div>
     @endif
@@ -22,8 +22,8 @@
         @csrf
         
         @if ($errors->any())
-            <div class="alert alert-danger" style="margin-bottom: 20px;">
-                <ul style="margin: 0; padding-left: 20px;">
+            <div class="alert alert-danger edit-error-alert">
+                <ul class="error-list">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach

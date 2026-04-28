@@ -14,7 +14,7 @@
                 <span class="worker-name">{{ $worker->last_name }} {{ $worker->first_name }}</span>
                 <div class="worker-actions">
                     <a href="/worker/edit/{{ $worker->id }}" class="btn-link" title="Редактировать"><i class="fas fa-pen"></i></a>
-                    <form action="/worker/delete/{{ $worker->id }}" method="POST" style="display: inline;">
+                    <form action="/worker/delete/{{ $worker->id }}" method="POST" class="inline-form">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn-link" onclick="return confirm('Удалить рабочего?')" title="Удалить">
@@ -28,17 +28,17 @@
     </div>
 
     <div class="card">
-        <div class="flex-between" style="flex-direction: column; align-items: stretch; gap: 16px;">
+        <div class="flex-between workers-form-container">
             <h3><i class="fas fa-layer-group"></i> Рабочие группы</h3>
-            <form action="/group/create" method="POST" style="display: flex; gap: 12px; width: 100%;">
+            <form action="/group/create" method="POST" class="workers-create-form">
                 @csrf
-                <input type="text" name="name" placeholder="Название группы" style="flex: 1; margin: 0;">
-                <button type="submit" class="btn btn-primary" style="padding: 12px 24px; white-space: nowrap;">
+                <input type="text" name="name" placeholder="Название группы" class="workers-create-input">
+                <button type="submit" class="btn btn-primary workers-create-btn">
                     <i class="fas fa-plus"></i> Создать
                 </button>
             </form>
         </div>
-        <div class="groups-list" style="margin-top: 20px;">
+        <div class="groups-list workers-groups-list">
             @forelse($groups as $group)
             <div class="group-card {{ $selectedGroupId == $group->id ? 'selected' : '' }}">
                 <a href="?group_id={{ $group->id }}" class="group-link">
@@ -47,7 +47,7 @@
                 </a>
                 <div class="group-actions">
                     <a href="/group/edit/{{ $group->id }}" class="btn-link" title="Редактировать"><i class="fas fa-pen"></i></a>
-                    <form action="/group/delete/{{ $group->id }}" method="POST" style="display: inline;">
+                    <form action="/group/delete/{{ $group->id }}" method="POST" class="inline-form">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn-link" onclick="return confirm('Удалить группу?')" title="Удалить">
@@ -57,7 +57,7 @@
                 </div>
             </div>
             @empty
-            <div class="alert alert-info" style="text-align: center; margin: 20px 0;">
+            <div class="alert alert-info workers-empty-alert">
                 <i class="fas fa-info-circle"></i> Группы не созданы. Создайте первую группу
             </div>
             @endforelse

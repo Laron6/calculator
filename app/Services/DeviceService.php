@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 class DeviceService
 {
+    private const MAX_ACTIVE_DEVICES = 5;
+    
     private function getRealIp(Request $request)
     {
         $ip = $request->ip();
@@ -32,6 +34,21 @@ class DeviceService
     public function registerDevice($user, $sessionId, Request $request)
     {
         UserDevice::where('session_id', $sessionId)->delete();
+        
+        $activeCount = UserDevice::where('user_id', $user->id)
+            ->where('is_active', true)
+            ->count();
+        
+        if ($activeCount >= self::MAX_ACTIVE_DEVICES) {
+            $oldest = UserDevice::where('user_id', $user->id)
+                ->where('is_active', true)
+                ->orderBy('last_activity', 'asc')
+                ->first();
+            
+            if ($oldest) {
+                $oldest->update(['is_active' => false]);
+            }
+        }
         
         $realIp = $this->getRealIp($request);
         
@@ -103,7 +120,7 @@ class DeviceService
     public function getUserDevices($userId)
     {
         return UserDevice::where('user_id', $userId)
-            ->where('is_active', true)  // <-- показываем только активные
+            ->where('is_active', true)
             ->orderBy('last_activity', 'desc')
             ->get();
     }
