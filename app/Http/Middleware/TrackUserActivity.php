@@ -16,7 +16,7 @@ class TrackUserActivity
     
     public function handle($request, Closure $next)
     {
-        if (auth()->check()) {
+        if (auth()->check() && $request->hasSession()) {
             $sessionId = $request->session()->getId();
             $this->deviceService->updateActivity($sessionId);
         }
