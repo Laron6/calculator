@@ -105,16 +105,24 @@ class DeviceService
     
     public function terminateSession($sessionId)
     {
-        UserDevice::where('session_id', $sessionId)->update([
-            'is_active' => false
-        ]);
+    UserDevice::where('session_id', $sessionId)->update([
+        'is_active' => false
+    ]);
+    
+    DB::table('sessions')->where('id', $sessionId)->delete();
     }
     
     public function terminateOtherSessions($userId, $currentSessionId)
     {
-        UserDevice::where('user_id', $userId)
+        $otherSessions = UserDevice::where('user_id', $userId)
             ->where('session_id', '!=', $currentSessionId)
-            ->update(['is_active' => false]);
+            ->where('is_active', true)
+            ->get();
+
+        foreach ($otherSessions as $device) {
+            $device->update(['is_active' => false]);
+            DB::table('sessions')->where('id', $device->session_id)->delete();
+        }    
     }
     
     public function getUserDevices($userId)
