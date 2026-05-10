@@ -47,64 +47,9 @@
 
 ---
 
-## 🚀 Быстрый запуск
+## 🚀 Установка
 
 ### Требования
-- PHP 8.2+
-- Composer
-- PostgreSQL 16+ (или SQLite для разработки)
-
-### Установка
-
-```bash
-# 1. Клонируем репозиторий
-git clone https://github.com/ArmdlTech/vkr-service-calc-productivity-assessment-work-groups.git
-cd vkr-service-calc-productivity-assessment-work-groups
-
-# 2. Устанавливаем зависимости
-composer install
-
-# 3. Копируем окружение
-cp .env.example .env
-
-# 4. Настраиваем базу данных (выберите один из вариантов)
-
-# Вариант А: PostgreSQL
-createdb -U postgres productivity_db
-# В .env укажите:
-# DB_CONNECTION=pgsql
-# DB_HOST=127.0.0.1
-# DB_PORT=5432
-# DB_DATABASE=productivity_db
-# DB_USERNAME=postgres
-# DB_PASSWORD=admin
-
-# Вариант Б: SQLite (быстрый старт без установки PostgreSQL)
-touch database/database.sqlite
-# В .env укажите:
-# DB_CONNECTION=sqlite
-# DB_DATABASE=/полный/путь/к/project/database/database.sqlite
-
-# 5. Генерируем ключ приложения
-php artisan key:generate
-
-# 6. Выполняем миграции и заполняем БД тестовыми данными
-php artisan migrate --seed
-
-# 7. Запускаем сервер разработки
-php artisan serve
-
----
-
-## ✅ Проверка работоспособности
-
-```bash
-# Запуск всех тестов
-php artisan test
-
-## 📦 Production-развёртывание (Ubuntu/Nginx/PHP-FPM/PostgreSQL)
-
-### Требования к серверу
 - Ubuntu 22.04 LTS или новее
 - PHP 8.2+
 - PostgreSQL 16+
@@ -112,84 +57,64 @@ php artisan test
 - Git
 - Composer
 
-### Установка пакетов
+### Установка и запуск
 
 ```bash
-# Обновление системы
+# 1. Клонируем репозиторий
+git clone https://github.com/Laron6/calculator.git
+cd calculator
+
+# 2. Устанавливаем зависимости
+composer install
+
+# 3. Обновляем систему
 sudo apt update
 sudo apt upgrade -y
 
-# Установка Nginx
+# 4. Устанавливаем Nginx
 sudo apt install nginx -y
 
-# Установка PHP и расширений
+# 5. Устанавливаем PHP и расширения
 sudo apt install software-properties-common -y
 sudo add-apt-repository ppa:ondrej/php -y
 sudo apt update
 sudo apt install php8.2 php8.2-fpm php8.2-pgsql php8.2-mbstring php8.2-xml php8.2-curl php8.2-zip php8.2-gd php8.2-intl -y
 
-# Установка PostgreSQL
+# 6. Устанавливаем PostgreSQL
 sudo apt install postgresql postgresql-contrib -y
 
-# Установка Git и Composer
+# 7. Устанавливаем Git и Composer
 sudo apt install git -y
 curl -sS https://getcomposer.org/installer | php
 sudo mv composer.phar /usr/local/bin/composer
 
-# Настройка PostgreSQL
-sudo -u postgres psql
-sql
+# 8. Настраиваем PostgreSQL
+sudo -u postgres psql <<EOF
 CREATE DATABASE productivity_db;
 CREATE USER productivity_user WITH PASSWORD 'secure_password';
 GRANT ALL PRIVILEGES ON DATABASE productivity_db TO productivity_user;
 \q
+EOF
 
-# Размещение файлов проекта
+# 9. Размещаем файлы проекта для production
 cd /var/www
 git clone https://github.com/ArmdlTech/vkr-service-calc-productivity-assessment-work-groups.git productivity-site
 cd productivity-site
-
-# Установка production-зависимостей
 composer install --no-dev --optimize-autoloader
-
-# Настройка окружения
 cp .env.example .env
-nano .env
-В .env укажите:
+nano .env  # Настройте подключение к БД (укажите DATABASE_URL или параметры ниже)
 
-env
-APP_NAME="Оценка производительности"
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://ваш-домен.ru
-
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_DATABASE=productivity_db
-DB_USERNAME=productivity_user
-DB_PASSWORD=secure_password
-
-SESSION_DRIVER=database
-
-# Генерация ключа
+# 10. Настраиваем окружение
 php artisan key:generate
-
-# Выполнение миграций
 php artisan migrate --force
-
-# Кэширование
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
-
-# Права доступа
 sudo chown -R www-data:www-data storage bootstrap/cache
 sudo chmod -R 775 storage bootstrap/cache
 
-# Пример Nginx-конфига
-sudo nano /etc/nginx/sites-available/productivity
-nginx
+# 11. Настраиваем Nginx
+sudo tee /etc/nginx/sites-available/productivity > /dev/null <<'EOF'
 server {
     listen 80;
     server_name ваш-домен.ru;
@@ -220,20 +145,20 @@ server {
         deny all;
     }
 }
+EOF
 
-# Активация и перезагрузка
+# 12. Активируем сайт и перезапускаем Nginx
 sudo ln -s /etc/nginx/sites-available/productivity /etc/nginx/sites-enabled/
 sudo rm /etc/nginx/sites-enabled/default
 sudo nginx -t
 sudo systemctl restart nginx
 
-# Установка SSL-сертификата (Let's Encrypt)
+# 13. Устанавливаем SSL-сертификат (Let's Encrypt)
 sudo apt install certbot python3-certbot-nginx -y
 sudo certbot --nginx -d ваш-домен.ru
 
-# Резервное копирование БД
-Создайте скрипт /usr/local/bin/backup.sh:
-
+# 14. Настраиваем резервное копирование БД
+sudo tee /usr/local/bin/backup.sh > /dev/null <<'EOF'
 #!/bin/bash
 BACKUP_DIR="/backups"
 DATE=$(date +%Y%m%d_%H%M%S)
@@ -241,16 +166,52 @@ mkdir -p $BACKUP_DIR
 pg_dump productivity_db > $BACKUP_DIR/db_$DATE.sql
 tar -czf $BACKUP_DIR/files_$DATE.tar.gz /var/www/productivity-site
 find $BACKUP_DIR -type f -mtime +30 -delete
+EOF
+sudo chmod +x /usr/local/bin/backup.sh
+(crontab -l 2>/dev/null; echo "0 2 * * * /usr/local/bin/backup.sh") | crontab -
 
-# Установите выполнение ежедневно в 2:00
-0 2 * * * /usr/local/bin/backup.sh
-
-# Обновление приложения
+# 15. Настраиваем обновление приложения
+sudo tee /usr/local/bin/update-app.sh > /dev/null <<'EOF'
+#!/bin/bash
 cd /var/www/productivity-site
 git pull
 composer install --no-dev --optimize-autoloader
-php artisan migrate --force
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 sudo chown -R www-data:www-data storage bootstrap/cache
+EOF
+sudo chmod +x /usr/local/bin/update-app.sh
+
+# 16. Копируем окружение
+cp .env.example .env
+
+# 17. Настраиваем базу данных (выберите один из вариантов)
+
+# Вариант А: PostgreSQL
+createdb -U postgres productivity_db
+# В .env укажите:
+# DB_CONNECTION=pgsql
+# DB_HOST=127.0.0.1
+# DB_PORT=5432
+# DB_DATABASE=productivity_db
+# DB_USERNAME=postgres
+# DB_PASSWORD=admin
+
+# Вариант Б: SQLite (быстрый старт без установки PostgreSQL)
+touch database/database.sqlite
+# В .env укажите:
+# DB_CONNECTION=sqlite
+# DB_DATABASE=/полный/путь/к/project/database/database.sqlite
+
+# 18. Генерируем ключ приложения
+php artisan key:generate
+
+# 19. Выполняем миграции и заполняем БД тестовыми данными
+php artisan migrate --seed
+
+# 20. Запускаем сервер разработки
+php artisan serve
+
+# 21. Запускаем все тесты
+php artisan test
