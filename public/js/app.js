@@ -23,8 +23,3 @@ document.getElementById('fileInput')?.addEventListener('change', function(e) {
     document.getElementById('submitBtn').disabled = !e.target.files[0];
     document.getElementById('submitBtn').style.opacity = e.target.files[0] ? '1' : '0.5';
 });
-
-// Клик по кнопке выбора файла
-document.querySelector('.file-upload-label')?.addEventListener('click', function() {
-    document.getElementById('fileInput').click();
-});
