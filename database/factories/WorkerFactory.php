@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Worker;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class WorkerFactory extends Factory
@@ -25,6 +26,7 @@ class WorkerFactory extends Factory
             'age' => $age,
             'experience' => rand(0, $maxExperience),
             'gender' => rand(0, 1),
+            'user_id' => User::factory(),
             'created_at' => now(),
             'updated_at' => now(),
         ];
