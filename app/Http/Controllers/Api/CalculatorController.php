@@ -10,7 +10,9 @@ class CalculatorController extends Controller
 {
     public function calculate($groupId)
     {
-        $group = WorkGroup::with('workers')->find($groupId);
+        $group = WorkGroup::with('workers')
+            ->where('user_id', auth()->id())
+            ->find($groupId);
         
         if (!$group) {
             return response()->json(['error' => 'Группа не найдена'], 404);
