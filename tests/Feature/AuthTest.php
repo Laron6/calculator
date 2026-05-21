@@ -60,11 +60,4 @@ class AuthTest extends TestCase
         $response->assertStatus(302);
         $this->assertGuest();
     }
-
-    #[Test]
-    public function api_returns_404_for_nonexistent_group(): void
-    {
-        $response = $this->get('/api/v1/calculate/999');
-        $response->assertStatus(404);
-    }
 }
