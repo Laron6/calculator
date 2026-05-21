@@ -53,6 +53,11 @@
     display: block;
 }
 
+.statistics-note-alert {
+    margin-top: 15px;
+    font-size: 12px;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
