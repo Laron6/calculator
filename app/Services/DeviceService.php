@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\UserDevice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DeviceService
 {
@@ -11,24 +12,7 @@ class DeviceService
     
     private function getRealIp(Request $request)
     {
-        $ip = $request->ip();
-        
-        $trustedHeaders = [
-            'HTTP_CF_CONNECTING_IP',
-            'HTTP_X_FORWARDED_FOR',
-            'HTTP_X_REAL_IP',
-            'HTTP_CLIENT_IP',
-        ];
-        
-        foreach ($trustedHeaders as $header) {
-            if ($request->server->has($header)) {
-                $ips = explode(',', $request->server->get($header));
-                $ip = trim($ips[0]);
-                break;
-            }
-        }
-        
-        return $ip;
+        return $request->ip();
     }
     
     public function registerDevice($user, $sessionId, Request $request)
@@ -46,7 +30,7 @@ class DeviceService
                 ->first();
             
             if ($oldest) {
-                $oldest->update(['is_active' => false]);
+                $this->terminateSession($oldest->session_id);
             }
         }
         
@@ -105,24 +89,33 @@ class DeviceService
     
     public function terminateSession($sessionId)
     {
-    UserDevice::where('session_id', $sessionId)->update([
-        'is_active' => false
-    ]);
-    
-    DB::table('sessions')->where('id', $sessionId)->delete();
+        // Удаляем реальную Laravel-сессию
+        DB::table('sessions')->where('id', $sessionId)->delete();
+        
+        // Деактивируем запись в user_devices
+        UserDevice::where('session_id', $sessionId)->update([
+            'is_active' => false
+        ]);
     }
     
     public function terminateOtherSessions($userId, $currentSessionId)
     {
+        // Получаем ТОЛЬКО чужие сессии
         $otherSessions = UserDevice::where('user_id', $userId)
             ->where('session_id', '!=', $currentSessionId)
             ->where('is_active', true)
             ->get();
-
-        foreach ($otherSessions as $device) {
-            $device->update(['is_active' => false]);
-            DB::table('sessions')->where('id', $device->session_id)->delete();
-        }    
+        
+        foreach ($otherSessions as $session) {
+            // Удаляем реальные Laravel-сессии
+            DB::table('sessions')->where('id', $session->session_id)->delete();
+            
+            // Деактивируем запись в user_devices
+            $session->is_active = false;
+            $session->save();
+        }
+        
+        // Текущее устройство НЕ ТРОГАЕМ
     }
     
     public function getUserDevices($userId)
@@ -131,5 +124,5 @@ class DeviceService
             ->where('is_active', true)
             ->orderBy('last_activity', 'desc')
             ->get();
-    }
+    }  
 }
