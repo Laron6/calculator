@@ -12,7 +12,7 @@ class ImportExportController extends Controller
     public function exportWorkers()
     {
         try {
-            $workers = Worker::all();
+            $workers = Worker::where('user_id', auth()->id())->get();
             $content = '';
             foreach ($workers as $w) {
                 $lastName = str_replace(';', '\;', $w->last_name);
@@ -34,7 +34,7 @@ class ImportExportController extends Controller
     {
         try {
             $request->validate([
-                'file' => 'required|file|mimes:txt,lst|max:1024'
+                'file' => 'required|file|mimes:txt,lst,text/plain|max:1024'
             ]);
 
             $file = $request->file('file');
@@ -46,7 +46,7 @@ class ImportExportController extends Controller
             }
 
             $importService = app(ImportService::class);
-            $result = $importService->importFromContent($content);
+            $result = $importService->importFromContent($content, auth()->id());
 
             $message = "Импортировано: {$result['added']} новых рабочих";
             if ($result['duplicates'] > 0) {
@@ -59,10 +59,20 @@ class ImportExportController extends Controller
                     ->with('import_errors', $result['errors']);
             }
 
-            return redirect()->route('home', ['tab' => 'workers'])->with('success', $message);
+            return redirect()->route('home', ['tab' => 'workers'])
+                ->with('success', $message);
+                
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $errors = $e->errors();
+            $errorMessage = isset($errors['file'][0]) ? $errors['file'][0] : 'Файл должен быть в формате .lst или .txt';
+            return redirect()->back()
+                ->withErrors(['file' => $errorMessage])
+                ->withInput();
+                
         } catch (\Exception $e) {
             Log::error('Ошибка импорта: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Ошибка при импорте файла: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Ошибка при импорте файла: ' . $e->getMessage());
         }
     }
 }
