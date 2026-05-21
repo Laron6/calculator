@@ -3,6 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\GroupProductivity;
+use App\Models\User;
+use App\Models\WorkGroup;
+use App\Models\Worker;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class GroupProductivityFactory extends Factory
@@ -16,9 +19,12 @@ class GroupProductivityFactory extends Factory
         $productivity = round($volume / $time, 2);
         
         return [
+            'work_group_id' => WorkGroup::factory(),
+            'worker_id' => Worker::factory(),
             'volume' => $volume,
             'time' => $time,
             'value' => $productivity,
+            'user_id' => User::factory(),
             'created_at' => now(),
             'updated_at' => now(),
         ];
