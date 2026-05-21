@@ -4,15 +4,20 @@ namespace App\Services;
 
 use App\Models\GroupProductivity;
 use App\Models\WorkGroup;
+use App\Models\Worker;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class ProductivityService
 {
     public function saveProductivities($groupId, array $volumes, array $times)
     {
-        $group = WorkGroup::find($groupId);
+        $group = WorkGroup::where('id', $groupId)
+            ->where('user_id', Auth::id())
+            ->first();
+            
         if (!$group) {
-            Log::error('Группа не найдена', ['group_id' => $groupId]);
+            Log::error('Группа не найдена или не принадлежит пользователю', ['group_id' => $groupId]);
             return false;
         }
         
@@ -20,6 +25,15 @@ class ProductivityService
         $savedCount = 0;
         
         foreach ($workerIds as $workerId) {
+            // Проверяем, что рабочий принадлежит текущему пользователю
+            $worker = Worker::where('id', $workerId)
+                ->where('user_id', Auth::id())
+                ->exists();
+                
+            if (!$worker) {
+                continue;
+            }
+            
             $volume = $volumes[$workerId] ?? null;
             $time = $times[$workerId] ?? null;
             
@@ -43,7 +57,8 @@ class ProductivityService
                 [
                     'volume' => $volume,
                     'time' => $time,
-                    'value' => round($productivity, 2)
+                    'value' => round($productivity, 2),
+                    'user_id' => Auth::id()
                 ]
             );
             
@@ -67,6 +82,7 @@ class ProductivityService
     public function getProductivities($groupId)
     {
         return GroupProductivity::where('work_group_id', $groupId)
+            ->where('user_id', Auth::id())
             ->get()
             ->keyBy('worker_id');
     }
@@ -77,6 +93,7 @@ class ProductivityService
     public function getVolumes($groupId)
     {
         return GroupProductivity::where('work_group_id', $groupId)
+            ->where('user_id', Auth::id())
             ->pluck('volume', 'worker_id')
             ->toArray();
     }
@@ -87,6 +104,7 @@ class ProductivityService
     public function getTimes($groupId)
     {
         return GroupProductivity::where('work_group_id', $groupId)
+            ->where('user_id', Auth::id())
             ->pluck('time', 'worker_id')
             ->toArray();
     }
@@ -97,6 +115,7 @@ class ProductivityService
     public function getProductivityValues($groupId)
     {
         return GroupProductivity::where('work_group_id', $groupId)
+            ->where('user_id', Auth::id())
             ->pluck('value', 'worker_id')
             ->toArray();
     }
