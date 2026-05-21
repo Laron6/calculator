@@ -4,11 +4,30 @@ namespace App\Services;
 
 use App\Models\Worker;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class ImportService
 {
-    public function importFromContent(string $content): array
+    /**
+     * Импорт из содержимого файла
+     * 
+     * @param string $content
+     * @param int|null $userId ID пользователя (если null, берётся из Auth)
+     * @return array
+     */
+    public function importFromContent(string $content, ?int $userId = null): array
     {
+        $userId = $userId ?? Auth::id();
+        
+        if (!$userId) {
+            return [
+                'added' => 0,
+                'duplicates' => 0,
+                'errors' => ['Пользователь не авторизован']
+            ];
+        }
+        
+        $content = str_replace("\r\n", "\n", $content);
         $lines = explode("\n", $content);
 
         $result = [
@@ -21,7 +40,11 @@ class ImportService
             $line = trim($line);
             if (empty($line)) continue;
 
+            $line = str_replace('\\;', '||SEMICOLON||', $line);
             $parts = explode(';', $line);
+            $parts = array_map(function($part) {
+                return str_replace('||SEMICOLON||', ';', $part);
+            }, $parts);
 
             if (count($parts) < 6) {
                 $result['errors'][] = "Строка " . ($lineNumber + 1) . ": неверный формат (ожидается 6 полей, найдено " . count($parts) . ")";
@@ -35,6 +58,7 @@ class ImportService
                 'age' => (int) trim($parts[3]),
                 'experience' => (int) trim($parts[4]),
                 'gender' => (int) trim($parts[5]),
+                'user_id' => $userId,
             ];
 
             $validator = Validator::make($data, [
@@ -44,6 +68,7 @@ class ImportService
                 'age' => 'required|integer|min:18|max:100',
                 'experience' => 'required|integer|min:0|max:80',
                 'gender' => 'required|in:0,1',
+                'user_id' => 'required|exists:users,id',
             ]);
 
             if ($validator->fails()) {
@@ -59,6 +84,7 @@ class ImportService
 
             $exists = Worker::where('last_name', $data['last_name'])
                 ->where('first_name', $data['first_name'])
+                ->where('user_id', $userId)
                 ->where(function ($q) use ($data) {
                     $q->where('patronymic', $data['patronymic'])
                       ->orWhereNull('patronymic');
