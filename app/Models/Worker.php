@@ -12,11 +12,16 @@ class Worker extends Model
 {
     use HasFactory, WorkerAttributes, WorkerScopes, WorkerRelations;
     
-    protected $fillable = ['last_name', 'first_name', 'patronymic', 'age', 'experience', 'gender'];
+    protected $fillable = ['last_name', 'first_name', 'patronymic', 'age', 'experience', 'gender', 'user_id'];
     
     protected $casts = [
         'age' => 'integer',
         'experience' => 'integer',
         'gender' => 'integer'
     ];
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
