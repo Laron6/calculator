@@ -96,8 +96,12 @@
 
     @if($showResults && count($calculatedResults) > 0)
     @php
+        // Исключаем работников с нулевой производительностью из расчёта средней
+        $validResults = array_filter($calculatedResults, function($res) {
+            return $res['productivity'] > 0;
+        });
         $totalProductivity = array_sum(array_column($calculatedResults, 'productivity'));
-        $averageProductivity = count($calculatedResults) > 0 ? round($totalProductivity / count($calculatedResults), 2) : 0;
+        $averageProductivity = count($validResults) > 0 ? round(array_sum(array_column($validResults, 'productivity')) / count($validResults), 2) : 0;
     @endphp
     <div class="mt-4 results-section">
         <h3><i class="fas fa-chart-line"></i> Результаты расчёта</h3>
@@ -128,9 +132,16 @@
             </div>
             <div class="metric-card">
                 <div class="metric-value">{{ number_format($averageProductivity, 2) }} шт/ч</div>
-                <div class="metric-label">Средняя производительность</div>
+                <div class="metric-label">Средняя производительность (по активным)</div>
             </div>
         </div>
+        
+        @if(count($validResults) < count($calculatedResults))
+        <div class="alert alert-info statistics-note-alert">
+            <i class="fas fa-info-circle"></i> 
+            Работники с нулевой производительностью исключены из расчёта средней.
+        </div>
+        @endif
     </div>
     @endif
 </div>
