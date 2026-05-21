@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserDevice;
 use App\Services\DeviceService;
 use App\Auth\LoginRequest;
 use App\Auth\RegisterRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -28,7 +29,6 @@ class AuthController extends Controller
     
     public function login(LoginRequest $request)
     {
-        // Защита от брутфорса: максимум 5 попыток с одного IP за 1 минуту
         $key = 'login_attempts_' . $request->ip();
         
         if (RateLimiter::tooManyAttempts($key, 5)) {
@@ -41,7 +41,6 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
         
         if (Auth::attempt($credentials, $request->remember)) {
-            // Очищаем счётчик попыток при успешном входе
             RateLimiter::clear($key);
             
             $request->session()->regenerate();
@@ -55,7 +54,6 @@ class AuthController extends Controller
             return redirect()->intended('/');
         }
         
-        // Увеличиваем счётчик неудачных попыток
         RateLimiter::hit($key, 60);
         
         return back()->withErrors([
@@ -70,6 +68,15 @@ class AuthController extends Controller
     
     public function register(RegisterRequest $request)
     {
+        $key = 'register_attempts_' . $request->ip();
+        
+        if (RateLimiter::tooManyAttempts($key, 3)) {
+            $seconds = RateLimiter::availableIn($key);
+            return back()->withErrors([
+                'email' => 'Слишком много попыток регистрации. Попробуйте через ' . $seconds . ' секунд.',
+            ])->onlyInput('email');
+        }
+        
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -85,13 +92,25 @@ class AuthController extends Controller
             $request
         );
         
+        RateLimiter::clear($key);
+        
         return redirect('/');
     }
     
     public function logout(Request $request)
     {
-        $sessionId = $request->session()->getId();
-        $this->deviceService->terminateSession($sessionId);
+        // Получаем реальный session_id из БД
+        $dbSession = DB::table('sessions')
+            ->where('user_id', auth()->id())
+            ->orderBy('last_activity', 'desc')
+            ->first();
+        
+        if ($dbSession) {
+            $this->deviceService->terminateSession($dbSession->id);
+        } else {
+            $sessionId = $request->session()->getId();
+            $this->deviceService->terminateSession($sessionId);
+        }
         
         Auth::logout();
         $request->session()->invalidate();
@@ -108,25 +127,43 @@ class AuthController extends Controller
     
     public function terminateDevice($deviceId)
     {
-        $device = \App\Models\UserDevice::where('id', $deviceId)
+        $device = UserDevice::where('id', $deviceId)
             ->where('user_id', auth()->id())
             ->firstOrFail();
         
-        $currentSessionId = session()->getId();
-        if ($device->session_id === $currentSessionId) {
+        $currentDbSession = DB::table('sessions')
+            ->where('user_id', auth()->id())
+            ->orderBy('last_activity', 'desc')
+            ->first();
+        
+        $isCurrent = false;
+        if ($currentDbSession && $device->session_id === $currentDbSession->id) {
+            $isCurrent = true;
+        }
+        
+        if ($isCurrent) {
             return redirect()->route('devices')->with('error', 'Нельзя завершить текущую сессию');
         }
         
-        $device->update(['is_active' => false]);
+        $this->deviceService->terminateSession($device->session_id);
         
         return redirect()->route('devices')->with('success', 'Сессия завершена');
     }
     
     public function terminateOtherDevices()
     {
-        $currentSessionId = session()->getId();
+        $currentDbSession = DB::table('sessions')
+            ->where('user_id', auth()->id())
+            ->orderBy('last_activity', 'desc')
+            ->first();
         
-        $otherSessions = \App\Models\UserDevice::where('user_id', auth()->id())
+        if (!$currentDbSession) {
+            return redirect()->route('devices')->with('error', 'Не удалось определить текущую сессию');
+        }
+        
+        $currentSessionId = $currentDbSession->id;
+        
+        $otherSessions = UserDevice::where('user_id', auth()->id())
             ->where('session_id', '!=', $currentSessionId)
             ->where('is_active', true)
             ->exists();
