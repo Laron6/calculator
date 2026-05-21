@@ -6,112 +6,142 @@ use Tests\TestCase;
 use App\Models\Worker;
 use App\Models\WorkGroup;
 use App\Models\GroupProductivity;
+use App\Models\User;
 use App\Services\ProductivitySolver;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use PHPUnit\Framework\Attributes\Test;
 
 class ProductivitySolverTest extends TestCase
 {
     use RefreshDatabase;
 
-    private WorkGroup $group;
-    private Worker $worker1;
-    private Worker $worker2;
-
+    private User $user;
+    
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->worker1 = Worker::create([
+        $this->user = User::factory()->create();
+    }
+    
+    public function test_it_calculates_individual_productivity_correctly()
+    {
+        $group = WorkGroup::factory()->create([
+            'name' => 'Test Group',
+            'user_id' => $this->user->id
+        ]);
+        
+        $worker1 = Worker::factory()->create([
             'last_name' => 'Иванов',
             'first_name' => 'Иван',
-            'patronymic' => 'Иванович',
-            'age' => 30,
-            'experience' => 10,
-            'gender' => 0,
+            'user_id' => $this->user->id
         ]);
-
-        $this->worker2 = Worker::create([
+        $worker2 = Worker::factory()->create([
             'last_name' => 'Петров',
             'first_name' => 'Пётр',
-            'patronymic' => 'Петрович',
-            'age' => 35,
-            'experience' => 15,
-            'gender' => 0,
+            'user_id' => $this->user->id
         ]);
-
-        $this->group = WorkGroup::create(['name' => 'Тестовая бригада']);
-        $this->group->workers()->attach([$this->worker1->id, $this->worker2->id]);
-
+        
+        $group->workers()->attach([$worker1->id, $worker2->id]);
+        
         GroupProductivity::create([
-            'work_group_id' => $this->group->id,
-            'worker_id' => $this->worker1->id,
+            'work_group_id' => $group->id,
+            'worker_id' => $worker1->id,
             'volume' => 500,
             'time' => 8,
-            'value' => 62.50,
+            'value' => 62.5,
+            'user_id' => $this->user->id
         ]);
-
+        
         GroupProductivity::create([
-            'work_group_id' => $this->group->id,
-            'worker_id' => $this->worker2->id,
+            'work_group_id' => $group->id,
+            'worker_id' => $worker2->id,
             'volume' => 300,
             'time' => 6,
-            'value' => 50.00,
+            'value' => 50,
+            'user_id' => $this->user->id
         ]);
-    }
-
-    #[Test]
-    public function it_calculates_individual_productivity_correctly(): void
-    {
-        $solver = new ProductivitySolver($this->group);
+        
+        $solver = new ProductivitySolver($group);
         $results = $solver->calculateProductivity();
-
-        $this->assertCount(2, $results);
-        $this->assertEqualsWithDelta(62.50, $results[0], 0.01);
-        $this->assertEqualsWithDelta(50.00, $results[1], 0.01);
+        
+        $this->assertEquals(62.5, $results[0]);
+        $this->assertEquals(50, $results[1]);
     }
-
-    #[Test]
-    public function it_calculates_total_productivity_correctly(): void
+    
+    public function test_it_calculates_total_productivity_correctly()
     {
-        $solver = new ProductivitySolver($this->group);
+        $group = WorkGroup::factory()->create([
+            'name' => 'Test Group',
+            'user_id' => $this->user->id
+        ]);
+        
+        $worker1 = Worker::factory()->create(['user_id' => $this->user->id]);
+        $worker2 = Worker::factory()->create(['user_id' => $this->user->id]);
+        
+        $group->workers()->attach([$worker1->id, $worker2->id]);
+        
+        GroupProductivity::create([
+            'work_group_id' => $group->id,
+            'worker_id' => $worker1->id,
+            'volume' => 500,
+            'time' => 8,
+            'value' => 62.5,
+            'user_id' => $this->user->id
+        ]);
+        
+        GroupProductivity::create([
+            'work_group_id' => $group->id,
+            'worker_id' => $worker2->id,
+            'volume' => 300,
+            'time' => 6,
+            'value' => 50,
+            'user_id' => $this->user->id
+        ]);
+        
+        $solver = new ProductivitySolver($group);
         $solver->calculateProductivity();
-        $total = $solver->getTotalProductivity();
-
-        $this->assertEqualsWithDelta(112.50, $total, 0.01);
+        
+        $this->assertEquals(112.5, $solver->getTotalProductivity());
+        $this->assertEquals(56.25, $solver->getAverageProductivity());
     }
-
-    #[Test]
-    public function it_handles_zero_time_correctly(): void
+    
+    public function test_it_handles_zero_time_correctly()
     {
-        GroupProductivity::where('work_group_id', $this->group->id)
-            ->where('worker_id', $this->worker1->id)
-            ->update(['time' => 0, 'value' => 0]);
-
-        $solver = new ProductivitySolver($this->group);
-        $results = $solver->calculateProductivity();
-
-        $this->assertEqualsWithDelta(0, $results[0], 0.01);
-    }
-
-    #[Test]
-    public function it_handles_empty_data_correctly(): void
-    {
-        $emptyGroup = WorkGroup::create(['name' => 'Пустая группа']);
-        $worker = Worker::create([
-            'last_name' => 'Сидоров',
-            'first_name' => 'Сидор',
-            'patronymic' => null,
-            'age' => 25,
-            'experience' => 5,
-            'gender' => 1,
+        $group = WorkGroup::factory()->create([
+            'name' => 'Test Group',
+            'user_id' => $this->user->id
         ]);
-        $emptyGroup->workers()->attach($worker->id);
-
-        $solver = new ProductivitySolver($emptyGroup);
+        
+        $worker = Worker::factory()->create(['user_id' => $this->user->id]);
+        $group->workers()->attach($worker->id);
+        
+        GroupProductivity::create([
+            'work_group_id' => $group->id,
+            'worker_id' => $worker->id,
+            'volume' => 100,
+            'time' => 0,
+            'value' => 0,
+            'user_id' => $this->user->id
+        ]);
+        
+        $solver = new ProductivitySolver($group);
         $results = $solver->calculateProductivity();
-
-        $this->assertCount(1, $results);
-        $this->assertEqualsWithDelta(0, $results[0], 0.01);
+        
+        $this->assertEquals(0, $results[0]);
+    }
+    
+    public function test_it_handles_empty_data_correctly()
+    {
+        $group = WorkGroup::factory()->create([
+            'name' => 'Test Group',
+            'user_id' => $this->user->id
+        ]);
+        
+        $worker = Worker::factory()->create(['user_id' => $this->user->id]);
+        $group->workers()->attach($worker->id);
+        
+        $solver = new ProductivitySolver($group);
+        $results = $solver->calculateProductivity();
+        
+        $this->assertEquals(0, $results[0]);
     }
 }
