@@ -4,9 +4,11 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\WorkerController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\ProductivityController;
-use App\Http\Controllers\ImportExportController;
+use App\Http\Controllers\ImportController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TelegramController;
 use Illuminate\Support\Facades\Route;
 
 // Главная страница (сначала аутх)
@@ -28,18 +30,18 @@ Route::middleware('auth')->group(function () {
         Route::post('/update/{id}', [GroupController::class, 'update'])->name('group.update');
         Route::delete('/delete/{id}', [GroupController::class, 'destroy'])->name('group.destroy');
         
-        // Состав группы
         Route::post('/{groupId}/add-worker', [GroupController::class, 'addWorker'])->name('group.addWorker');
         Route::post('/{groupId}/remove-worker', [GroupController::class, 'removeWorker'])->name('group.removeWorker');
         
-        // Производительность
         Route::post('/{groupId}/productivity', [ProductivityController::class, 'saveProductivity'])->name('productivity.save');
         Route::get('/{groupId}/calculate', [ProductivityController::class, 'calculate'])->name('productivity.calculate');
+        
+        Route::get('/{groupId}/export-statistics', [ExportController::class, 'exportStatisticsCsv'])->name('export.statistics');
     });
     
-    // Импорт/экспорт
-    Route::get('/workers/export', [ImportExportController::class, 'exportWorkers'])->name('workers.export');
-    Route::post('/workers/import', [ImportExportController::class, 'importWorkers'])->name('workers.import');
+    // Импорт/экспорт рабочих
+    Route::get('/workers/export', [ExportController::class, 'exportWorkers'])->name('workers.export');
+    Route::post('/workers/import', [ImportController::class, 'importWorkers'])->name('workers.import');
     
     // Графики
     Route::get('/charts', [ChartController::class, 'charts'])->name('charts');
@@ -48,6 +50,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/devices', [AuthController::class, 'devices'])->name('devices');
     Route::delete('/devices/{id}', [AuthController::class, 'terminateDevice'])->name('devices.terminate');
     Route::post('/devices/terminate-others', [AuthController::class, 'terminateOtherDevices'])->name('devices.terminate-others');
+    
+    // Telegram
+    Route::get('/telegram/report/{groupId}', [TelegramController::class, 'sendReport'])->name('telegram.report');
 });
 
 // Авторизация (гости)
