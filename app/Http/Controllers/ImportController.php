@@ -7,29 +7,8 @@ use App\Services\ImportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-class ImportExportController extends Controller
+class ImportController extends Controller
 {
-    public function exportWorkers()
-    {
-        try {
-            $workers = Worker::where('user_id', auth()->id())->get();
-            $content = '';
-            foreach ($workers as $w) {
-                $lastName = str_replace(';', '\;', $w->last_name);
-                $firstName = str_replace(';', '\;', $w->first_name);
-                $patronymic = str_replace(';', '\;', $w->patronymic ?? '');
-
-                $content .= "{$lastName};{$firstName};{$patronymic};{$w->age};{$w->experience};{$w->gender}\n";
-            }
-            return response($content)
-                ->header('Content-Type', 'text/plain; charset=UTF-8')
-                ->header('Content-Disposition', 'attachment; filename="workers.lst"');
-        } catch (\Exception $e) {
-            Log::error('Ошибка экспорта: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Ошибка при экспорте данных');
-        }
-    }
-
     public function importWorkers(Request $request)
     {
         try {
