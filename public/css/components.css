@@ -47,8 +47,174 @@
     font-size: 11px;
 }
 
-/* Предупреждение */
+/* Фильтр и экспорт */
+.filter-export-bar {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+}
+
+.filter-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff !important;
+}
+
+.filter-title i {
+    color: #43e97b;
+    margin-right: 8px;
+}
+
+.filter-hint {
+    margin-top: 12px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.filter-hint i {
+    margin-right: 5px;
+}
+
+.filter-form {
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.filter-form .form-group {
+    margin-bottom: 0;
+}
+
+.filter-form .form-group label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: #ffffff !important;
+}
+
+.filter-form input[type="date"] {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 14px;
+    height: 38px;
+    font-family: inherit;
+    width: auto;
+    min-width: 140px;
+}
+
+.filter-form input[type="date"]:focus {
+    outline: none;
+    border-color: #667eea;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.filter-form input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+.filter-form .btn,
+.filter-form .btn-primary,
+.filter-form .btn-success {
+    padding: 8px 20px;
+    font-size: 14px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+/* Кнопки для расчетов */
+.calc-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+/* Стили для колонки даты в таблице */
+.date-col {
+    width: 160px;
+}
+
+.required-star {
+    color: #f5576c;
+    margin-left: 4px;
+}
+
+/* Единый стиль для всех полей ввода даты */
+.filter-form input[type="date"],
+.input-date {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    font-size: 14px;
+    height: 38px;
+    font-family: inherit;
+    width: auto;
+    min-width: 140px;
+}
+
+.filter-form input[type="date"]:focus,
+.input-date:focus {
+    outline: none;
+    border-color: #667eea;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.filter-form input[type="date"]::-webkit-calendar-picker-indicator,
+.input-date::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+/* Подсказка для даты */
+.date-hint {
+    display: block;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 4px;
+}
+
+/* Кнопка Telegram */
+.btn-telegram {
+    background: transparent !important;
+    border: 1px solid #ffffff !important;
+    color: #ffffff !important;
+    transition: all 0.3s ease;
+}
+
+.btn-telegram:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: #ffffff !important;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+}
+
+.btn-telegram i {
+    color: #ffffff !important;
+}
+
+/* Предупреждения */
 .alert-warning {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.05) 100%);
+    border-left: 3px solid #f59e0b;
+    color: #fde68a;
+}
+
+.statistics-warning-alert {
+    margin: 20px 0;
     background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.05) 100%);
     border-left: 3px solid #f59e0b;
     color: #fde68a;
@@ -81,13 +247,6 @@
     font-size: 12px;
     color: rgba(255, 255, 255, 0.6);
     margin-top: 8px;
-}
-
-/* Кнопки для расчетов */
-.calc-buttons {
-    display: flex;
-    gap: 12px;
-    margin-top: 20px;
 }
 
 .btn-secondary {
@@ -217,7 +376,6 @@
     padding-right: 5px;
 }
 
-/* Тонкий красивый скролл */
 .group-management .worker-list::-webkit-scrollbar {
     width: 4px;
 }
@@ -246,7 +404,6 @@
     flex-wrap: wrap;
 }
 
-/* Блок с именем пользователя */
 .welcome-message {
     display: inline-flex;
     align-items: center;
@@ -260,14 +417,12 @@
     white-space: nowrap;
 }
 
-/* Контейнер для кнопок Устройства и Выйти */
 .action-buttons {
     display: flex;
     gap: 12px;
     align-items: center;
 }
 
-/* Обнуляем отступы у формы внутри action-buttons */
 .action-buttons form {
     margin: 0;
     padding: 0;
@@ -275,7 +430,6 @@
     align-items: center;
 }
 
-/* Единый стиль для всех кнопок в action-buttons */
 .action-buttons .btn-outline,
 .action-buttons a.btn-outline,
 .action-buttons button.btn-outline {
@@ -298,7 +452,6 @@
     white-space: nowrap;
 }
 
-/* Hover для всех кнопок */
 .action-buttons .btn-outline:hover,
 .action-buttons a.btn-outline:hover,
 .action-buttons button.btn-outline:hover {
@@ -307,7 +460,63 @@
     transform: translateY(-2px);
 }
 
-/* Светлая тема для кнопок в action-buttons */
+/* Светлая тема */
+body[data-theme="light"] .filter-export-bar {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+body[data-theme="light"] .filter-title {
+    border-bottom-color: #e5e7eb;
+    color: #1e1b4b !important;
+}
+
+body[data-theme="light"] .filter-hint {
+    color: #6b7280 !important;
+}
+
+body[data-theme="light"] .filter-form .form-group label {
+    color: #4b5563 !important;
+}
+
+body[data-theme="light"] .filter-form input[type="date"],
+body[data-theme="light"] .input-date {
+    border: 1px solid #d1d5db;
+    background: white;
+    color: #1e1b4b;
+}
+
+body[data-theme="light"] .filter-form input[type="date"]::-webkit-calendar-picker-indicator,
+body[data-theme="light"] .input-date::-webkit-calendar-picker-indicator {
+    filter: invert(0);
+}
+
+body[data-theme="light"] .date-hint {
+    color: #6b7280;
+}
+
+body[data-theme="light"] .btn-telegram {
+    border-color: #1e1b4b !important;
+    color: #1e1b4b !important;
+}
+
+body[data-theme="light"] .btn-telegram:hover {
+    background: rgba(30, 27, 75, 0.1) !important;
+}
+
+body[data-theme="light"] .btn-telegram i {
+    color: #1e1b4b !important;
+}
+
+body[data-theme="light"] .statistics-warning-alert {
+    background: rgba(245, 158, 11, 0.1);
+    color: #92400e;
+}
+
+body[data-theme="light"] .alert-warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #92400e;
+}
+
 body[data-theme="light"] .action-buttons .btn-outline,
 body[data-theme="light"] .action-buttons a.btn-outline,
 body[data-theme="light"] .action-buttons button.btn-outline {
@@ -324,26 +533,44 @@ body[data-theme="light"] .action-buttons button.btn-outline:hover {
     color: #4338ca;
 }
 
-/* Тёмная тема для welcome-message */
-body[data-theme="dark"] .welcome-message {
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-}
-
-/* Светлая тема для welcome-message */
 body[data-theme="light"] .welcome-message {
     background: rgba(0, 0, 0, 0.06);
     border: 1px solid #d1d5db;
     color: #1e1b4b;
 }
 
-/* Контейнер для кнопок неавторизованного пользователя */
-.auth-buttons {
-    margin-top: 20px;
-    display: flex;
-    gap: 15px;
-    justify-content: center;
+body[data-theme="light"] .radio-label {
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+}
+
+body[data-theme="light"] .radio-label:hover {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: #667eea;
+}
+
+body[data-theme="light"] .radio-label span {
+    color: #1e1b4b;
+}
+
+/* Тёмная тема */
+body[data-theme="dark"] .btn-telegram {
+    border-color: #ffffff !important;
+    color: #ffffff !important;
+}
+
+body[data-theme="dark"] .btn-telegram:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+body[data-theme="dark"] .btn-telegram i {
+    color: #ffffff !important;
+}
+
+body[data-theme="dark"] .welcome-message {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
 /* Алерт ошибок в карточке */
@@ -351,7 +578,6 @@ body[data-theme="light"] .welcome-message {
     margin-bottom: 20px;
 }
 
-/* Список ошибок */
 .worker-error-list {
     margin: 0;
     padding-left: 20px;
@@ -364,7 +590,6 @@ body[data-theme="light"] .welcome-message {
     margin-top: 8px;
 }
 
-/* Стиль радиокнопки */
 .radio-label {
     display: flex;
     align-items: center;
@@ -387,37 +612,19 @@ body[data-theme="light"] .welcome-message {
     margin: 0;
 }
 
-/* Светлая тема для радиокнопок */
-body[data-theme="light"] .radio-label {
-    background: #ffffff;
-    border: 1px solid #d1d5db;
-}
-
-body[data-theme="light"] .radio-label:hover {
-    background: rgba(102, 126, 234, 0.1);
-    border-color: #667eea;
-}
-
-body[data-theme="light"] .radio-label span {
-    color: #1e1b4b;
-}
-
 /* Заголовок импорта */
 .import-title {
     font-size: 16px;
 }
 
-/* Обёртка для импорта файла */
 .import-file-wrapper {
     margin-bottom: 16px;
 }
 
-/* Скрытый инпут файла */
 #fileInput {
     display: none;
 }
 
-/* Кнопка импорта (disabled по умолчанию) */
 .import-submit-btn {
     opacity: 0.5;
 }
@@ -426,7 +633,6 @@ body[data-theme="light"] .radio-label span {
     opacity: 1;
 }
 
-/* Ссылка экспорта */
 .export-link {
     margin-top: 12px;
     text-align: center;
@@ -438,7 +644,6 @@ body[data-theme="light"] .radio-label span {
     margin: 0 auto;
 }
 
-/* Алерты на страницах редактирования */
 .edit-alert {
     margin-bottom: 20px;
 }
@@ -453,7 +658,6 @@ body[data-theme="light"] .radio-label span {
     margin: 40px 0;
 }
 
-/* Контейнер графика */
 .chart-container-styled {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 24px;
