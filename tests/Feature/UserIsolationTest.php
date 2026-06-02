@@ -148,7 +148,6 @@ class UserIsolationTest extends TestCase
         $response = $this->get("/?tab=statistics&group_id={$group2->id}");
         $response->assertStatus(200);
         
-        // Проверяем, что данные пользователя user2 не отображаются
         $response->assertDontSee('100');
         $response->assertDontSee('10');
     }
