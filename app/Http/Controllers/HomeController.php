@@ -36,15 +36,31 @@ class HomeController extends Controller
             $selectedGroup = null;
             $volumes = [];
             $times = [];
+            $recordDates = [];
             $calculatedResults = [];
             $showResults = $request->get('calculated') == 1;
+            $showNoDataWarning = false;
+            $currentDate = now()->format('Y-m-d');
+            
+            // Установка дат по умолчанию для фильтра (последние 3 месяца)
+            if (!$request->has('from') && !$request->has('to')) {
+                $from = now()->subMonths(3)->format('Y-m-d');
+                $to = now()->format('Y-m-d');
+            } else {
+                $from = $request->get('from');
+                $to = $request->get('to');
+            }
             
             if ($selectedGroupId) {
                 $selectedGroup = WorkGroup::with('workers')->find($selectedGroupId);
                 if ($selectedGroup) {
-                    // Получаем сохранённые объёмы и время
-                    $volumes = $this->productivityService->getVolumes($selectedGroupId);
-                    $times = $this->productivityService->getTimes($selectedGroupId);
+                    $volumes = $this->productivityService->getVolumes($selectedGroupId, $from, $to);
+                    $times = $this->productivityService->getTimes($selectedGroupId, $from, $to);
+                    $recordDates = $this->productivityService->getRecordDates($selectedGroupId, $from, $to);
+                    
+                    if (($from || $to) && !$this->productivityService->hasDataForPeriod($selectedGroupId, $from, $to)) {
+                        $showNoDataWarning = true;
+                    }
                     
                     if ($showResults) {
                         $solver = new ProductivitySolver($selectedGroup);
@@ -53,7 +69,9 @@ class HomeController extends Controller
                         Log::info('Расчёт производительности', [
                             'group' => $selectedGroup->name,
                             'workers_count' => count($selectedGroup->workers),
-                            'decisions' => $decisions
+                            'decisions' => $decisions,
+                            'from' => $from,
+                            'to' => $to
                         ]);
                         
                         $workerArray = $selectedGroup->workers->values();
@@ -72,8 +90,8 @@ class HomeController extends Controller
             if ($tab === 'statistics') {
                 return view('statistics.index', compact(
                     'workers', 'groups', 'selectedGroup', 'selectedGroupId',
-                    'volumes', 'times', 'calculatedResults',
-                    'showResults'
+                    'volumes', 'times', 'recordDates', 'calculatedResults', 
+                    'showResults', 'from', 'to', 'showNoDataWarning', 'currentDate'
                 ));
             }
             
