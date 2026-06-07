@@ -148,6 +148,7 @@ class UserIsolationTest extends TestCase
         $response = $this->get("/?tab=statistics&group_id={$group2->id}");
         $response->assertStatus(200);
         
+        // Проверяем, что данные пользователя user2 не отображаются
         $response->assertDontSee('100');
         $response->assertDontSee('10');
     }
@@ -167,7 +168,8 @@ class UserIsolationTest extends TestCase
             'times' => [$worker->id => 999],
         ]);
         
-        $response->assertStatus(403);
+        $response->assertStatus(302);
+        $response->assertSessionHas('error');
         
         $this->assertDatabaseMissing('group_productivities', [
             'work_group_id' => $group->id,

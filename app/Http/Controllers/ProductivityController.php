@@ -19,21 +19,20 @@ class ProductivityController extends Controller
     
     public function saveProductivity(Request $request, $groupId)
     {
-        // Проверяем, что группа принадлежит текущему пользователю (ДО try)
-        $group = WorkGroup::where('id', $groupId)
-            ->where('user_id', Auth::id())
-            ->first();
-        
-        if (!$group) {
-            abort(403, 'У вас нет прав на редактирование этой группы');
-        }
-        
         try {
             $request->validate([
                 'volumes' => 'nullable|array',
                 'times' => 'nullable|array',
                 'record_dates' => 'nullable|array',
             ]);
+            
+            $group = WorkGroup::where('id', $groupId)
+                ->where('user_id', Auth::id())
+                ->first();
+            
+            if (!$group) {
+                return redirect()->back()->with('error', 'Группа не найдена');
+            }
             
             $recordDates = $request->record_dates ?? [];
             
@@ -64,6 +63,7 @@ class ProductivityController extends Controller
                 ->withInput();
         } catch (\Exception $e) {
             Log::error('Ошибка сохранения: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
             return redirect()->back()->with('error', 'Ошибка при сохранении: ' . $e->getMessage());
         }
     }

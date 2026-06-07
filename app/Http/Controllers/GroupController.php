@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\WorkGroup;
+use App\Models\Worker;
+use App\Models\GroupProductivity;
 use App\Services\GroupService;
 use App\Http\Requests\GroupRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class GroupController extends Controller
 {
@@ -45,15 +48,52 @@ class GroupController extends Controller
     public function addWorker(Request $request, $groupId)
     {
         $request->validate(['worker_id' => 'required|exists:workers,id']);
-        $group = WorkGroup::findOrFail($groupId);
-        $this->groupService->addWorker($group, $request->worker_id);
+        
+        $group = WorkGroup::where('id', $groupId)
+            ->where('user_id', Auth::id())
+            ->first();
+        
+        if (!$group) {
+            abort(403, 'У вас нет прав на добавление рабочих в эту группу');
+        }
+        
+        $worker = Worker::where('id', $request->worker_id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+        
+        // Добавляем рабочего в группу
+        $group->workers()->attach($worker->id);
+        
+        // Создаём запись производительности за сегодня
+        GroupProductivity::updateOrCreate(
+            [
+                'work_group_id' => $groupId,
+                'worker_id' => $worker->id,
+                'record_date' => now()->format('Y-m-d'),
+            ],
+            [
+                'volume' => 0,
+                'time' => 0,
+                'value' => 0,
+                'user_id' => Auth::id(),
+            ]
+        );
+        
         return redirect()->route('home', ['tab' => 'workers', 'group_id' => $groupId])->with('success', 'Рабочий добавлен в группу');
     }
     
     public function removeWorker(Request $request, $groupId)
     {
         $request->validate(['worker_id' => 'required|exists:workers,id']);
-        $group = WorkGroup::findOrFail($groupId);
+        
+        $group = WorkGroup::where('id', $groupId)
+            ->where('user_id', Auth::id())
+            ->first();
+        
+        if (!$group) {
+            abort(403, 'У вас нет прав на удаление рабочих из этой группы');
+        }
+        
         $this->groupService->removeWorker($group, $request->worker_id);
         return redirect()->route('home', ['tab' => 'workers', 'group_id' => $groupId])->with('success', 'Рабочий удален из группы');
     }

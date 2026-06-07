@@ -63,6 +63,8 @@ class ProductivityFeatureTest extends TestCase
 
         $this->assertEquals(2, $group->workers()->count());
 
+        GroupProductivity::where('work_group_id', $group->id)->delete();
+
         $this->post("/group/{$group->id}/productivity", [
             'volumes' => [$worker1->id => 500, $worker2->id => 300],
             'times' => [$worker1->id => 8, $worker2->id => 6],
@@ -105,6 +107,8 @@ class ProductivityFeatureTest extends TestCase
 
         $group->workers()->attach($worker->id);
 
+        GroupProductivity::where('work_group_id', $group->id)->delete();
+
         $this->post("/group/{$group->id}/productivity", [
             'volumes' => [$worker->id => 100],
             'times' => [$worker->id => 6.5],
@@ -140,6 +144,8 @@ class ProductivityFeatureTest extends TestCase
         ]);
 
         $group->workers()->attach([$worker1->id, $worker2->id]);
+
+        GroupProductivity::where('work_group_id', $group->id)->delete();
 
         $this->post("/group/{$group->id}/productivity", [
             'volumes' => [$worker1->id => 100, $worker2->id => null],
